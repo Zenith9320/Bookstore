@@ -123,15 +123,21 @@ inline bool judge_show_query(const string& s) {
   }
   pos++;
   string temp1 = "";
-  string no_quotation;
   while (pos < s.size()) {
     temp1 += s[pos];
     pos++;
   }
+  if (temp1.size() == 0) return false;
   if (temp == "ISBN" 
   && judgeISBN(temp1)) return true;
-  if ((temp == "name" || temp == "author" || temp == "keyword")
+  if ((temp == "name" || temp == "author")
   && judgeBookAutherKey(temp1)) return true;
+  if (temp == "keyword") {
+    for (int i = 0; i < temp1.size(); i++) {
+      if (temp1[i] == '|') return false;
+    }
+    return true;
+  }
   return false;
 }
 
