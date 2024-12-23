@@ -10,13 +10,14 @@
 constexpr int MAX_STRING = 65;
 constexpr int BLOCK_SIZE = 1000;
 
+template<typename T>
 struct Key_Value {//存储键值对
     char key[MAX_STRING];
-    int value;
+    T value;
 
     Key_Value() = default;
 
-    Key_Value(const std::string &key, const int value) : value(value) {
+    Key_Value(const std::string &key, const T value) : value(value) {
         strcpy(this->key, key.c_str());
     }
 };
@@ -30,23 +31,26 @@ struct Index {//存储index
     Index() : offset(0), next_offset(-1), KeyValue_num(0) {};
 };
 
+template<typename T>
 struct Block {
-    Key_Value KeyValues[BLOCK_SIZE];
+    Key_Value<T> KeyValues[BLOCK_SIZE];
     int KeyValue_num;
     Block() : KeyValue_num(0) {}
 };
 
-inline void splitBlock(Block &block1, Block &block2) {//把block1裂块并把多余数据存放到block2中
+template<typename T>
+inline void splitBlock(Block<T> &block1, Block<T> &block2) {//把block1裂块并把多余数据存放到block2中
     int mid = BLOCK_SIZE / 2;
     for (int j = mid; j < block1.KeyValue_num; ++j) {
         block2.KeyValues[j - mid] = block1.KeyValues[j];
-        block1.KeyValues[j] = Key_Value();
+        block1.KeyValues[j] = Key_Value<T>();
         block2.KeyValue_num++;
     }
     block1.KeyValue_num = mid;
 }
     
-inline bool cmp(const Key_Value& Key_Value1, const Key_Value& Key_Value2) {
+template<typename T>
+inline bool cmp(const Key_Value<T>& Key_Value1, const Key_Value<T>& Key_Value2) {
     if (strcmp(Key_Value1.key, Key_Value2.key) == 0) {
         return Key_Value1.value > Key_Value2.value;
     }
@@ -55,7 +59,8 @@ inline bool cmp(const Key_Value& Key_Value1, const Key_Value& Key_Value2) {
     }
 }
 
-inline void insertKeyvalue(Block &block1, Key_Value &kv) {
+template<typename T>
+inline void insertKeyvalue(Block<T> &block1, Key_Value<T> &kv) {
     block1.KeyValues[block1.KeyValue_num] = kv;
     block1.KeyValue_num++;
     for (int j = block1.KeyValue_num - 1; j >= 1; --j) {//冒泡维护数据顺序
@@ -68,7 +73,8 @@ inline void insertKeyvalue(Block &block1, Key_Value &kv) {
 }
 
 //块内有序，块间未必
-inline void mergeBlocks(Block &block1, Block &block2, Block &new_prev_block) {
+template<typename T>
+inline void mergeBlocks(Block<T> &block1, Block<T> &block2, Block<T> &new_prev_block) {
     int cur = 0, cur1 = 0, cur2 = 0;
     while (cur1 < block1.KeyValue_num || cur2 < block2.KeyValue_num) {
         if (cur1 == block1.KeyValue_num) {
@@ -88,11 +94,12 @@ inline void mergeBlocks(Block &block1, Block &block2, Block &new_prev_block) {
 }
 
 //Blocklist类
+template<typename T>
 class Blocklist {
 private:
     std::string filename;
     MemoryRiver<Index, 2> index_file;//开头存储键值对数量和存储偏移量
-    MemoryRiver<Block, 0> block_file;//直接开始存储block
+    MemoryRiver<Block<T>, 0> block_file;//直接开始存储block
 
 public:
     Blocklist(std::string base_filename, std::string index_filename, std::string value_filename)
@@ -100,7 +107,7 @@ public:
       index_file(base_filename + index_filename), 
       block_file(base_filename + value_filename) {
         Index init_index;
-        Block init_block;
+        Block<T> init_block;
         std::ifstream file(index_file.file_name, std::ios::binary);
         if (!file.is_open()) {//创建文件
             index_file.initialise();
@@ -113,10 +120,10 @@ public:
 
     ~Blocklist() = default;
 
-    void Insert(const std::string &key, const int &value) {
+    void Insert(const std::string &key, const T &value) {
         Key_Value KeyValue(key, value);
         Index index;
-        Block block;
+        Block<T> block;
         //获取索引文件中的Index数量
         int block_pos = 0, index_number;
         index_file.get_info(index_number, 1);
@@ -132,7 +139,7 @@ public:
                 block_file.read(block, block_pos);
                 // 若Block满了就需要裂块
                 if (block.KeyValue_num == BLOCK_SIZE) {
-                    Block new_block;
+                    Block<T> new_block;
                     Index new_index;
                     splitBlock(block, new_block);//裂块
                     // 插入键值对
@@ -184,10 +191,10 @@ public:
             }
         }
     }
-    void DeleteKeyValue(const std::string &key, const int &value) {
+    void DeleteKeyValue(const std::string &key, const T &value) {
         Key_Value KeyValue(key, value);
         Index index;
-        Block block;
+        Block<T> block;
         int index_pos = 0;
         index_file.get_info(index_pos, 2);
         int prev_pos = -1, prev_KeyValue_num = -1, index_number;
@@ -224,7 +231,7 @@ public:
                         //与前一个块合并：减少读写次数
                         else if (prev_pos != -1 && block.KeyValue_num <= BLOCK_SIZE / 2 && prev_KeyValue_num <= BLOCK_SIZE / 2) {
                             Index prev_index;
-                            Block prev_block;
+                            Block<T> prev_block;
 
                             index_file.read(prev_index, prev_pos);
                             block_file.read(prev_block, prev_index.offset);
@@ -232,7 +239,7 @@ public:
                             prev_index.next_offset = index.next_offset;
                             
                             //并块
-                            Block new_prev_block;
+                            Block<T> new_prev_block;
                             
                             mergeBlocks(block, prev_block, new_prev_block);
                             prev_index.KeyValue_num = new_prev_block.KeyValue_num;
@@ -267,12 +274,12 @@ public:
     }
     void FindKey(const std::string &key) {
         int start = 0, index_number = 0;
-        std::set <int> result;
+        std::set <T> result;
         index_file.get_info(start, 2);
         index_file.get_info(index_number, 1);
         int index_pos = start;
         Index index;
-        Block block;
+        Block<T> block;
         bool if_found = false;
         for (int i = 0; i < index_number; ++i) {
             index_file.read(index, index_pos);
