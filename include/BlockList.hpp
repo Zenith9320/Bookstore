@@ -316,6 +316,11 @@ public:
         if (result.size() != 0) return true;
         return false;
     }
+    T FindSingle(const string& key) {
+        auto result = FindKey(key);
+        auto it = result.begin();
+        return *it;
+    }
 };
 
 #endif 
