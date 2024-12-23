@@ -9,8 +9,6 @@
 
 constexpr int MAX_STRING = 65;
 constexpr int BLOCK_SIZE = 1000;
-const std::string index_filename = "index.dat";
-const std::string value_filename = "values.dat";
 
 struct Key_Value {//存储键值对
     char key[MAX_STRING];
@@ -97,7 +95,7 @@ private:
     MemoryRiver<Block, 0> block_file;//直接开始存储block
 
 public:
-    Blocklist(const std::string base_filename = "KVDB_")
+    Blocklist(std::string base_filename, std::string index_filename, std::string value_filename)
     : filename(base_filename), 
       index_file(base_filename + index_filename), 
       block_file(base_filename + value_filename) {
