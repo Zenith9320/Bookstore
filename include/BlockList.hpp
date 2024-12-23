@@ -272,7 +272,7 @@ public:
             prev_KeyValue_num = index.KeyValue_num;
         }
     }
-    void FindKey(const std::string &key) {
+    std::set<T> FindKey(const std::string &key) {
         int start = 0, index_number = 0;
         std::set <T> result;
         index_file.get_info(start, 2);
@@ -280,7 +280,6 @@ public:
         int index_pos = start;
         Index index;
         Block<T> block;
-        bool if_found = false;
         for (int i = 0; i < index_number; ++i) {
             index_file.read(index, index_pos);
 
@@ -304,23 +303,18 @@ public:
                 }
                 //加入所有数据
                 while (l < block.KeyValue_num && (strcmp(block.KeyValues[l].key, key.c_str()) == 0)) {
-                    if_found = true;
                     result.insert(block.KeyValues[l].value);
                     l++;
                 }
             }
             index_pos = index.next_offset;
         }
-    
-        if (!if_found) {
-            std::cout << "null";
-        }
-        else {
-            for (auto it = result.begin(); it != result.end(); it++) {
-                std::cout << *it << ' ';
-            }
-        }
-        std::cout << std::endl;
+        return result;
+    }
+    bool if_find(const std::string &key) {
+        auto result = FindKey(key);
+        if (result.size() != 0) return true;
+        return false;
     }
 };
 
