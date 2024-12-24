@@ -79,6 +79,7 @@ public:
   void Logout() {
     if (LogStack.empty()) { cout << "Invalid\n"; return; }
     LogStack.pop();
+    select_book = "";
   }
   void Login(string ID, string pswd) {
     if (!AccountList.if_find(ID)) { cout << "Invalid\n"; return; }
