@@ -44,7 +44,17 @@ public:
   ~AccountSystem() {
     while (!LogStack.empty()) LogStack.pop();
     delete bookSystem;
+    AccountList.clearall();
+    select_book = "";
   };
+  int get_current_privilege() {
+    if (LogStack.empty()) return -1;
+    return LogStack.top().privilege;
+  }
+  int get_privilege(const string& ID) {
+    if (!AccountList.if_find(ID)) return -1;
+    return AccountList.FindSingle(ID).privilege;
+  }
   AccountSystem(BookSystem books) : AccountList("Account_", "index_file.dat", "value_file.dat") {
     while (!LogStack.empty()) LogStack.pop();
     select_book = "";

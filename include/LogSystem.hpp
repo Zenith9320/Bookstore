@@ -22,7 +22,9 @@ private:
 
 public:
   LogSystem() : FinanceList("FinanceList.dat") {};
-
+  ~LogSystem() {
+    FinanceList.clear();
+  }
   //输出指定笔数的记录
   void show_finance(const int& count) {
     if (count == 0) {

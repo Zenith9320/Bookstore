@@ -119,7 +119,10 @@ public:
     }
 
     ~Blocklist() = default;
-
+    void clearall() {
+        index_file.clear();
+        block_file.clear();
+    }
     void Insert(const std::string &key, const T &value) {
         Key_Value KeyValue(key, value);
         Index index;

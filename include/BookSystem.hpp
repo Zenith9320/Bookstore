@@ -61,6 +61,14 @@ public:
                  ISBN_Book_list("ISBN_Book_", "index_file.dat", "value_file.dat") {
     select_book = Book();
   }
+  ~BookSystem() {
+    name_ISBN_list.clearall();
+    author_ISBN_list.clearall();
+    keywords_ISBN_list.clearall();
+    price_ISBN_list.clearall();
+    ISBN_Book_list.clearall();
+    clear_select_book();
+  }
   void clear_select_book() {
     select_book = Book();
   }

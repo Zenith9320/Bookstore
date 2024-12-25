@@ -28,7 +28,11 @@ public:
         }
         file.close();
     }
-
+    //清空文件
+    void clear() {
+        ofstream file(file_name, std::ios::trunc);
+        file.close();
+    }
     //读出第n个int的值赋给tmp，1_base
     void get_info(int &tmp, int n) {
         if (n > info_len) return;
