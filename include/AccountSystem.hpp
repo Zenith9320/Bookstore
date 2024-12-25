@@ -114,18 +114,21 @@ public:
     if (!AccountList.if_find(ID)) { cout << "Invalid\n"; return; }
     Account target = AccountList.FindSingle(ID);
     if (pswd != target.passward) { cout << "Invalid\n"; return; }
-    if (LogStack.top().privilege <= target.privilege) { cout << "Invalid\n"; return; }
     LogStack.push(target);
   }
-  void rootLogin(string ID, string name) {
-    if (ID != "root") { cout << "Invalid\n"; return; }
-    Account root = Account("root", "", name, 7) ;
-    LogStack.push(root);
+  void Login_nopswd(string ID) {
+    if (!AccountList.if_find(ID)) { cout << "Invalid\n"; return; }
+    Account target = AccountList.FindSingle(ID);
+    if (LogStack.top().privilege <= target.privilege) { cout << "Invalid\n"; return; }
+    LogStack.push(target);
   }
   void rootChangePassword(string ID, string pswd) {
     if (!AccountList.if_find(ID)) { cout << "Invalid\n"; return; }
     Account target = AccountList.FindSingle(ID);
     target.passward = pswd;
+  }
+  int get_account_num() {
+    return LogStack.size();
   }
 };
 
