@@ -31,6 +31,16 @@ private:
   BookSystem* bookSystem;
 
 public:
+  AccountSystem() : AccountList("Account_", "index_file.dat", "value_file.dat") {
+    while (!LogStack.empty()) LogStack.pop();
+    select_book = "";
+    Account root;
+    root.UserID = "root";
+    root.passward = "";
+    root.privilege = 7;
+    root.UserName = "";
+    AccountList.Insert(root.UserID, root);
+  }
   ~AccountSystem() {
     while (!LogStack.empty()) LogStack.pop();
     delete bookSystem;
