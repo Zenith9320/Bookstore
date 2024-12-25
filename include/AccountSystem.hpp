@@ -2,6 +2,7 @@
 #define ACCOUNT_HPP
 
 #include "BlockList.hpp"
+#include "BookSystem.hpp"
 #include <stack>
 #include <iostream>
 
@@ -27,16 +28,23 @@ private:
   Blocklist<Account> AccountList;
   stack<Account> LogStack;
   string select_book;
+  BookSystem* bookSystem;
+
 public:
-  AccountSystem() : AccountList("Account_", "index_file.dat", "value_file.dat") {
+  ~AccountSystem() {
+    while (!LogStack.empty()) LogStack.pop();
+    delete bookSystem;
+  };
+  AccountSystem(BookSystem books) : AccountList("Account_", "index_file.dat", "value_file.dat") {
     while (!LogStack.empty()) LogStack.pop();
     select_book = "";
     Account root;
     root.UserID = "root";
     root.passward = "";
     root.privilege = 7;
-    root.UserName = "root";
+    root.UserName = "";
     AccountList.Insert(root.UserID, root);
+    bookSystem = &books;
   }
   void Register(string ID, string pswd, string name) {
     Account New_member(ID, pswd, name);
@@ -80,6 +88,7 @@ public:
     if (LogStack.empty()) { cout << "Invalid\n"; return; }
     LogStack.pop();
     select_book = "";
+    bookSystem->clear_select_book();
   }
   void Login(string ID, string pswd) {
     if (!AccountList.if_find(ID)) { cout << "Invalid\n"; return; }
@@ -88,9 +97,9 @@ public:
     if (LogStack.top().privilege <= target.privilege) { cout << "Invalid\n"; return; }
     LogStack.push(target);
   }
-  void rootLogin(string ID) {
+  void rootLogin(string ID, string name) {
     if (ID != "root") { cout << "Invalid\n"; return; }
-    Account root = AccountList.FindSingle("root");
+    Account root = Account("root", "", name, 7) ;
     LogStack.push(root);
   }
   void rootChangePassword(string ID, string pswd) {
