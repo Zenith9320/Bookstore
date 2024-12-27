@@ -6,36 +6,60 @@
 #include <cstring>
 #include <set>
 
+using std::string;
 
-constexpr int MAX_STRING = 65;
-constexpr int BLOCK_SIZE = 1000;
+constexpr int BLOCK_SIZE = 10000;
 
 template<typename T>
 struct Key_Value {//存储键值对
-    char key[MAX_STRING];
+    string key;
     T value;
-
-    Key_Value() = default;
+    Key_Value() {
+        key = "";
+    };
 
     Key_Value(const std::string &key, const T value) : value(value) {
-        strcpy(this->key, key.c_str());
+        this->key = key;
+    }
+    Key_Value<T>& operator = (const Key_Value<T>& other) {
+      if (this != &other) {
+        this->key = other.key;
+        value = other.value;
+      }
+      return *this;
     }
 };
 
 struct Index {//存储index
     int offset;//记录偏移量
     int next_offset;//记录下一block的偏移量,用-1表示最后一个block
-    char beg_key[MAX_STRING];//开始的key
-    char end_key[MAX_STRING];//结束的key
+    string beg_key;
+    string end_key;
     int KeyValue_num;//总共有多少对
-    Index() : offset(0), next_offset(-1), KeyValue_num(0) {};
+    Index() : offset(0), next_offset(-1), KeyValue_num(0) {
+        beg_key = "";
+        end_key = "";
+    };
 };
 
 template<typename T>
 struct Block {
     Key_Value<T> KeyValues[BLOCK_SIZE];
     int KeyValue_num;
-    Block() : KeyValue_num(0) {}
+    Block() : KeyValue_num(0) {
+        for (int i = 0; i < BLOCK_SIZE; i++) {
+            KeyValues[i] = Key_Value<T>();
+        }
+    }
+    Block& operator = (const Block& other) {
+      if (this != &other) {
+        KeyValue_num = other.KeyValue_num;
+        for (int i = 0; i < KeyValue_num && i < BLOCK_SIZE; i++) {
+          KeyValues[i] = other.KeyValues[i];
+        }
+      }
+      return *this;
+    }
 };
 
 template<typename T>
@@ -51,16 +75,21 @@ inline void splitBlock(Block<T> &block1, Block<T> &block2) {//把block1裂块并
     
 template<typename T>
 inline bool cmp(const Key_Value<T>& Key_Value1, const Key_Value<T>& Key_Value2) {
-    if (strcmp(Key_Value1.key, Key_Value2.key) == 0) {
+    if (Key_Value1.key == Key_Value2.key) {
         return Key_Value1.value > Key_Value2.value;
     }
     else {
-        return strcmp(Key_Value1.key, Key_Value2.key) > 0;
+        return Key_Value1.key > Key_Value2.key;
     }
 }
 
 template<typename T>
-inline void insertKeyvalue(Block<T> &block1, Key_Value<T> &kv) {
+inline void insertKeyvalue(Block<T> &block1,const Key_Value<T> &kv) {
+    if (block1.KeyValue_num >= BLOCK_SIZE) {
+        std::cout << "1" << std::endl;
+        return;
+    }
+    std::cout << block1.KeyValues[block1.KeyValue_num].key << " " << std::endl;
     block1.KeyValues[block1.KeyValue_num] = kv;
     block1.KeyValue_num++;
     for (int j = block1.KeyValue_num - 1; j >= 1; --j) {//冒泡维护数据顺序
@@ -82,8 +111,7 @@ inline void mergeBlocks(Block<T> &block1, Block<T> &block2, Block<T> &new_prev_b
         } else if (cur2 == block2.KeyValue_num) {
             new_prev_block.KeyValues[cur++] = block1.KeyValues[cur1++];
         } else {
-            int key_cmp = strcmp(block1.KeyValues[cur1].key, block2.KeyValues[cur2].key);
-            if (key_cmp > 0 || (key_cmp == 0 && block1.KeyValues[cur1].value > block2.KeyValues[cur2].value)) {
+            if (block1.KeyValues[cur1].key > block2.KeyValues[cur2].key || (block1.KeyValues[cur1].key == block2.KeyValues[cur2].key && block1.KeyValues[cur1].value > block2.KeyValues[cur2].value)) {
                 new_prev_block.KeyValues[cur++] = block2.KeyValues[cur2++];
             } else {
                 new_prev_block.KeyValues[cur++] = block1.KeyValues[cur1++];
@@ -98,10 +126,9 @@ template<typename T>
 class Blocklist {
 private:
     std::string filename;
+public:    
     MemoryRiver<Index, 2> index_file;//开头存储键值对数量和存储偏移量
     MemoryRiver<Block<T>, 0> block_file;//直接开始存储block
-
-public:
     Blocklist(std::string base_filename, std::string index_filename, std::string value_filename)
     : filename(base_filename), 
       index_file(base_filename + index_filename), 
@@ -117,7 +144,6 @@ public:
             index_file.write_info(index_file.write(init_index), 2);//写入偏移量
         }
     }
-
     ~Blocklist() = default;
     void clearall() {
         index_file.clear();
@@ -137,7 +163,7 @@ public:
         for (int i = 0; i < index_number; ++i) {
             index_file.read(index, index_pos);
             // 插入键值对
-            if (strcmp(index.end_key, key.c_str()) >= 0 || index.next_offset == -1) {
+            if (index.end_key >= key || index.next_offset == -1) {
                 block_pos = index.offset;
                 block_file.read(block, block_pos);
                 // 若Block满了就需要裂块
@@ -158,10 +184,10 @@ public:
                     index.KeyValue_num = block.KeyValue_num;
                     new_index.KeyValue_num = new_block.KeyValue_num;
                     // 更新开始结束键
-                    strcpy(new_index.beg_key, new_block.KeyValues[0].key);
-                    strcpy(new_index.end_key, new_block.KeyValues[new_block.KeyValue_num - 1].key);
-                    strcpy(index.beg_key, block.KeyValues[0].key);
-                    strcpy(index.end_key, block.KeyValues[block.KeyValue_num - 1].key);
+                    new_index.beg_key = new_block.KeyValues[0].key;
+                    new_index.end_key = new_block.KeyValues[new_block.KeyValue_num - 1].key;
+                    index.beg_key = block.KeyValues[0].key;
+                    index.end_key = block.KeyValues[block.KeyValue_num - 1].key;
                     
                     // 更新链表
                     new_index.offset = block_file.write(new_block);
@@ -177,12 +203,12 @@ public:
                 } else {
                     insertKeyvalue(block, KeyValue);
                     index.KeyValue_num = block.KeyValue_num;
-                    if (strcmp(block.KeyValues[block.KeyValue_num - 1].key, index.end_key) != 0 || block.KeyValue_num == 1) {
-                        strcpy(index.end_key, block.KeyValues[block.KeyValue_num - 1].key);
+                    if (block.KeyValues[block.KeyValue_num - 1].key != index.end_key || block.KeyValue_num == 1) {
+                        index.end_key = block.KeyValues[block.KeyValue_num - 1].key;
                     }
     
-                    if (strcmp(block.KeyValues[0].key, index.beg_key) != 0 || block.KeyValue_num == 1) {
-                        strcpy(index.beg_key, block.KeyValues[0].key);
+                    if (block.KeyValues[0].key != index.beg_key || block.KeyValue_num == 1) {
+                        index.beg_key = block.KeyValues[0].key;
                     }
     
                     index_file.update(index, index_pos);
@@ -206,14 +232,14 @@ public:
         for (int i = 0; i < index_number; ++i) {
             index_file.read(index, index_pos);
             //查询直到比自己大的key
-            if (strcmp(index.beg_key, key.c_str()) > 0) {
+            if (index.beg_key > key) {
                 return;
             }
             //如果在这个block内
-            if (strcmp(index.end_key, key.c_str()) >= 0) {
+            if (index.end_key >= key) {
                 block_file.read(block, index.offset);
                 for (int j = 0; j < block.KeyValue_num; ++j) {
-                    if ((block.KeyValues[j].value == KeyValue.value) && (strcmp(KeyValue.key, block.KeyValues[j].key) == 0)) {
+                    if ((block.KeyValues[j].value == KeyValue.value) && (KeyValue.key == block.KeyValues[j].key)) {
                         //删除，键值块前移
                         for (int k = j; k < block.KeyValue_num - 1; ++k) {
                             block.KeyValues[k] = block.KeyValues[k + 1];
@@ -247,19 +273,19 @@ public:
                             mergeBlocks(block, prev_block, new_prev_block);
                             prev_index.KeyValue_num = new_prev_block.KeyValue_num;
 
-                            strcpy(prev_index.beg_key, new_prev_block.KeyValues[0].key);
-                            strcpy(prev_index.end_key, new_prev_block.KeyValues[prev_index.KeyValue_num - 1].key);
+                            prev_index.beg_key = new_prev_block.KeyValues[0].key;
+                            prev_index.end_key = new_prev_block.KeyValues[prev_index.KeyValue_num - 1].key;
 
                             index_file.update(prev_index, prev_pos);
                             block_file.update(new_prev_block, prev_index.offset);
                             index_file.write_info(index_number - 1, 1);
                         }
                         else {
-                            if (strcmp(block.KeyValues[0].key, index.beg_key) != 0) {
-                                strcpy(index.beg_key, block.KeyValues[0].key);
+                            if (block.KeyValues[0].key != index.beg_key) {
+                                index.beg_key = block.KeyValues[0].key;
                             }
-                            if (strcmp(block.KeyValues[block.KeyValue_num - 1].key, index.end_key) != 0) {
-                                strcpy(index.end_key, block.KeyValues[block.KeyValue_num - 1].key);
+                            if (block.KeyValues[block.KeyValue_num - 1].key != index.end_key) {
+                                index.end_key = block.KeyValues[block.KeyValue_num - 1].key;
                             }
                             index.KeyValue_num = block.KeyValue_num;
                             index_file.update(index, index_pos);
@@ -286,26 +312,26 @@ public:
         for (int i = 0; i < index_number; ++i) {
             index_file.read(index, index_pos);
 
-            if (strcmp(index.beg_key, key.c_str()) > 0) {
+            if (index.beg_key > key) {
                 break;
             }
 
-            if (strcmp(index.end_key, key.c_str()) >= 0) {
+            if (index.end_key >= key) {
                 block_file.read(block, index.offset);
                 int l = 0, r = block.KeyValue_num - 1;
                 while (l < r) {
                     int mid = l + (r - l) / 2; 
-                    if (strcmp(block.KeyValues[mid].key, key.c_str()) < 0) {
+                    if (block.KeyValues[mid].key < key) {
                         l = mid + 1; 
                     } else {
                         r = mid;
                     }
                 }
-                if (strcmp(block.KeyValues[l].key, key.c_str()) != 0) {
+                if (block.KeyValues[l].key != key) {
                     l++;
                 }
                 //加入所有数据
-                while (l < block.KeyValue_num && (strcmp(block.KeyValues[l].key, key.c_str()) == 0)) {
+                while (l < block.KeyValue_num && (block.KeyValues[l].key == key)) {
                     result.insert(block.KeyValues[l].value);
                     l++;
                 }
