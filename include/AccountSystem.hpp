@@ -12,40 +12,56 @@ using std::stack;
 
 struct Account {
   string UserID;
-  string passward;
+  string password;
   int privilege;
   string UserName;
 
-  Account() : UserID(""), passward(""), privilege(-1), UserName("") {};
+  Account & operator = (const Account& other) {
+    if (this != &other) {
+      UserID = other.UserID;
+      password = other.password;
+      privilege = other.privilege;
+      UserName = other.UserName;
+    }
+    return *this;
+  }
+  
+  Account() : UserID(""), password(""), privilege(0), UserName("") {};
+
   Account(string ID, string pswd, string name) 
-  : UserID(ID), passward(pswd), privilege(1), UserName(name){};
-  Account(string ID, string pswd, string name, int priv) 
-  : UserID(ID), passward(pswd), UserName(name), privilege(priv) {};
+  : UserID(ID), password(pswd), privilege(1), UserName(name){};
+
+  Account(string ID, string pswd, int priv, string name) 
+  : UserID(ID), password(pswd), privilege(priv), UserName(name) {};
 };
+
+inline bool operator == (const Account& account1, const Account& account2) {
+  return account1.UserID == account2.UserID;
+}
+
+inline bool operator > (const Account& account1, const Account& account2) {
+  return account1.UserID > account2.UserID;
+}
+
+inline bool operator < (const Account& account1, const Account& account2) {
+  return account1.UserID < account2.UserID;
+}
 
 class AccountSystem {
 private:
   Blocklist<Account> AccountList;
   stack<Account> LogStack;
   string select_book;
-  BookSystem* bookSystem;
 
 public:
   AccountSystem() : AccountList("Account_", "index_file.dat", "value_file.dat") {
-    while (!LogStack.empty()) LogStack.pop();
     select_book = "";
-    Account root;
-    root.UserID = "root";
-    root.passward = "";
-    root.privilege = 7;
-    root.UserName = "";
-    AccountList.Insert(root.UserID, root);
   }
   ~AccountSystem() {
     while (!LogStack.empty()) LogStack.pop();
-    delete bookSystem;
     AccountList.clearall();
     select_book = "";
+    LogStack = stack<Account>();
   };
   int get_current_privilege() {
     if (LogStack.empty()) return -1;
@@ -54,17 +70,6 @@ public:
   int get_privilege(const string& ID) {
     if (!AccountList.if_find(ID)) return -1;
     return AccountList.FindSingle(ID).privilege;
-  }
-  AccountSystem(BookSystem books) : AccountList("Account_", "index_file.dat", "value_file.dat") {
-    while (!LogStack.empty()) LogStack.pop();
-    select_book = "";
-    Account root;
-    root.UserID = "root";
-    root.passward = "";
-    root.privilege = 7;
-    root.UserName = "";
-    AccountList.Insert(root.UserID, root);
-    bookSystem = &books;
   }
   void Register(string ID, string pswd, string name) {
     Account New_member(ID, pswd, name);
@@ -80,7 +85,7 @@ public:
     if (AccountList.if_find(ID)) { cout << "Invalid\n"; return; }
     auto current_account = LogStack.top();
     if (priv > current_account.privilege) { cout << "Invalid\n"; return; } 
-    Account New_member(ID, pswd, name, priv);
+    Account New_member(ID, pswd,  priv, name);
     AccountList.Insert(ID, New_member);
   }
   void Delete(string ID) {
@@ -100,21 +105,26 @@ public:
   void ChangePassword(string ID, string Cur, string New) {
     if (!AccountList.if_find(ID)) { cout << "Invalid\n"; return; }
     Account target = AccountList.FindSingle(ID);
-    if (target.passward != Cur) { cout << "Invalid\n"; return; }
+    if (target.password != Cur) { cout << "Invalid\n"; return; }
     if (target.privilege < 1) { cout << "Invalid\n"; return; }
-    target.passward = New;
+    target.password = New;
   }
   void Logout() {
-    if (LogStack.empty()) { cout << "Invalid\n"; return; }
+    if (LogStack.empty()) { cout << "Inv, privilege(priv)alid\n"; return; }
     LogStack.pop();
     select_book = "";
-    bookSystem->clear_select_book();
   }
   void Login(string ID, string pswd) {
     if (!AccountList.if_find(ID)) { cout << "Invalid\n"; return; }
     Account target = AccountList.FindSingle(ID);
-    if (pswd != target.passward) { cout << "Invalid\n"; return; }
+    if (pswd != target.password) { cout << "Invalid\n"; return; }
     LogStack.push(target);
+  }
+  void rootLogin(string pswd) {
+    Account* root_account = new Account("root", pswd, 7 , "");
+    LogStack.push(*root_account); 
+    AccountList.Insert("root", *root_account);
+    delete root_account;
   }
   void Login_nopswd(string ID) {
     if (!AccountList.if_find(ID)) { cout << "Invalid\n"; return; }
@@ -125,7 +135,7 @@ public:
   void rootChangePassword(string ID, string pswd) {
     if (!AccountList.if_find(ID)) { cout << "Invalid\n"; return; }
     Account target = AccountList.FindSingle(ID);
-    target.passward = pswd;
+    target.password = pswd;
   }
   int get_account_num() {
     return LogStack.size();

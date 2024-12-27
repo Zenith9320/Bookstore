@@ -55,6 +55,22 @@ public:
     }
     std::cout << fixed << setprecision(2) << total_income << ' ' << fixed << setprecision(2) << total_outcome << '\n';
   }
+
+  //记录一笔收入
+  void record_income(const double& income) {
+    Finance finance;
+    finance.income = income;
+    finance.outcome = 0;
+    FinanceList.push_back(finance);
+  }
+
+  //记录一笔支出
+  void record_outcome(const double& outcome) {
+    Finance finance;
+    finance.income = 0;
+    finance.outcome = outcome;
+    FinanceList.push_back(finance);
+  }
 };
 
 #endif
