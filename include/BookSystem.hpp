@@ -2,6 +2,7 @@
 #define BOOKSYSTEM_HPP
 
 #include "BlockList.hpp"
+#include "LogSystem.hpp"
 #include <vector>
 #include <set>
 #include <iostream>
@@ -19,7 +20,17 @@ struct Book {
   vector<string> keywords;
   double price;
   int quantity;
-
+  Book& operator = (const Book& other) {
+    if (this != &other) {
+      ISBN = other.ISBN;
+      name = other.name;
+      author = other.author;
+      keywords = other.keywords;
+      price = other.price;
+      quantity = other.quantity;
+    }
+    return *this;
+  }
   Book() = default;
   Book(string ISBN, string name, string author, vector<string> keywords, double price, int quantity)
   : ISBN(ISBN), name(name), author(author), keywords(keywords), price(price), quantity(quantity) {};
@@ -37,6 +48,14 @@ struct Book {
 
 inline bool operator < (const Book& book1, const Book& book2) {
   return book1.ISBN < book2.ISBN;
+};
+
+inline bool operator > (const Book& book1, const Book& book2) {
+  return book1.ISBN > book2.ISBN;
+};
+
+inline bool operator == (const Book& book1, const Book& book2) {
+  return book1.ISBN == book2.ISBN;
 };
 
 class BookSystem {
@@ -111,9 +130,10 @@ public:
     if (showtype == "keyword") {
       auto ISBN_set = keywords_ISBN_list.FindKey(content);
       for (auto ISBN : ISBN_set) {
-        Book book;
-        ISBN_Book_list.FindKey(ISBN);
-        show_books.insert(book);
+        auto qualified_books = ISBN_Book_list.FindKey(ISBN);
+        for (auto book : qualified_books) {
+          show_books.insert(book);
+        }
       }
     }
     int num = show_books.size();
@@ -123,6 +143,27 @@ public:
     }
     for (auto it = show_books.begin(); it != show_books.end(); it++) {
       it->outputBook(*it);
+    }
+  }
+  void showall() {
+    int index_pos = 0;
+    int index_number = 0;
+    ISBN_Book_list.index_file.get_info(index_number, 1); 
+    ISBN_Book_list.index_file.get_info(index_pos, 2);    
+    for (int i = 0; i < index_number; ++i) {
+      Index index;
+      ISBN_Book_list.index_file.read(index, index_pos); 
+      int block_pos = index.offset;
+      Block<Book> block;
+      ISBN_Book_list.block_file.read(block, block_pos); 
+      for (int j = 0; j < block.KeyValue_num; ++j) {
+        const Key_Value<Book>& kv = block.KeyValues[j];
+        if constexpr (std::is_same<Book, Book>::value) {
+          Book book = kv.value; 
+          book.outputBook(book);
+        }
+      }
+      index_pos = index.next_offset;
     }
   }
   void buy(const string& ISBN, const string& quantity) {
@@ -143,8 +184,8 @@ public:
   }  
   void select(const string& ISBN) {
     if (!ISBN_Book_list.if_find(ISBN)) {
-      cout << "Invalid\n";
-      return;
+      Book new_book(ISBN);
+      ISBN_Book_list.Insert(ISBN, new_book);
     }
     select_book = ISBN_Book_list.FindSingle(ISBN);
   }
@@ -267,6 +308,9 @@ public:
     select_book.quantity += num;
     ISBN_Book_list.DeleteKeyValue(select_book.ISBN, select_book);
     ISBN_Book_list.Insert(select_book.ISBN, select_book);
+  }
+  auto get_select_book() {
+    return select_book;
   }
 };
 #endif
