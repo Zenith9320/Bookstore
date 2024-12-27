@@ -40,16 +40,10 @@ public:
       outfile.write(reinterpret_cast<const char*>(&value), sizeofT);
     }
   }
-  T& operator[](size_t index) {
+  T operator[](size_t index) {
     size_t size = get_size();
-    if (index >= size) {
-      return -1;
-    }
     T value;
     std::ifstream infile(file, std::ios::binary);
-    if (!infile.is_open()) {
-      return -1;
-    }
     infile.seekg(index * sizeofT);
     infile.read(reinterpret_cast<char*>(&value), sizeofT);
     return value;
