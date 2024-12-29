@@ -25,11 +25,37 @@ int main() {
     getline(std::cin, s);
     auto input = GetInput(s);
     bool flag = judge(input);
-    if (!flag && s != "") cout << "Invalid: syntax error\n";
+    if (!flag && s != "") cout << "Invalid\n";
     else {
       //退出程序
       if (input.size() == 0) continue;
       if (input[0] == "exit" || input[0] == "quit") {
+        std::ofstream file1("Bookstore_Account_index_file.dat", std::ios::trunc);
+        file1.close();
+        std::ofstream file2("Bookstore_Account_value_file.dat", std::ios::trunc);
+        file2.close();
+        std::ofstream file3("Bookstore_author_ISBN_index_file.dat", std::ios::trunc);
+        file3.close();
+        std::ofstream file4("Bookstore_author_ISBN_value_file.dat", std::ios::trunc);
+        file4.close();
+        std::ofstream file5("Bookstore_FinanceList.dat", std::ios::trunc);
+        file5.close();
+        std::ofstream file6("Bookstore_keywords_ISBN_index_file.dat", std::ios::trunc);
+        file6.close();
+        std::ofstream file7("Bookstore_keywords_ISBN_value_file.dat", std::ios::trunc);
+        file7.close();
+        std::ofstream file8("Bookstore_name_ISBN_index_file.dat", std::ios::trunc);
+        file8.close();
+        std::ofstream file9("Bookstore_name_ISBN_value_file.dat", std::ios::trunc);
+        file9.close();
+        std::ofstream file10("Bookstore_price_ISBN_index_file.dat", std::ios::trunc);
+        file10.close();
+        std::ofstream file11("Bookstore_price_ISBN_value_file.dat", std::ios::trunc);
+        file11.close();
+        std::ofstream file12("Bookstore_ISBN_Book_index_file.dat", std::ios::trunc);
+        file12.close();
+        std::ofstream file13("Bookstore_ISBN_Book_value_file.dat", std::ios::trunc);
+        file13.close();
         return 0;
       }
 
