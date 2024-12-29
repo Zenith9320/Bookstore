@@ -45,19 +45,19 @@ int main() {
       //退出程序
       if (input.size() == 0) continue;
       if (input[0] == "exit" || input[0] == "quit") {
-        remove("Account_index_file.dat");
-        remove("Account_value_file.dat");
-        remove("FinanceList.dat");
-        remove("ISBN_Book_index_file.dat");
-        remove("ISBN_Book_value_file.dat");
-        remove("author_ISBN_index_file.dat");
-        remove("author_ISBN_value_file.dat");
-        remove("keywords_ISBN_index_file.dat");
-        remove("keywords_ISBN_value_file.dat");
-        remove("name_ISBN_index_file.dat");
-        remove("name_ISBN_value_file.dat");
-        remove("price_ISBN_index_file.dat");
-        remove("price_ISBN_value_file.dat");
+        remove("/home/entong/Bookstore/Account_index_file.dat");
+        remove("/home/entong/Bookstore/Account_value_file.dat");
+        remove("/home/entong/Bookstore/FinanceList.dat");
+        remove("/home/entong/Bookstore/ISBN_Book_index_file.dat");
+        remove("/home/entong/Bookstore/ISBN_Book_value_file.dat");
+        remove("/home/entong/Bookstore/author_ISBN_index_file.dat");
+        remove("/home/entong/Bookstore/author_ISBN_value_file.dat");
+        remove("/home/entong/Bookstore/keywords_ISBN_index_file.dat");
+        remove("/home/entong/Bookstore/keywords_ISBN_value_file.dat");
+        remove("/home/entong/Bookstore/name_ISBN_index_file.dat");
+        remove("/home/entong/Bookstore/name_ISBN_value_file.dat");
+        remove("/home/entong/Bookstore/price_ISBN_index_file.dat");
+        remove("/home/entong/Bookstore/price_ISBN_value_file.dat");
         return 0;
       }
 
@@ -102,11 +102,11 @@ int main() {
 
       //修改密码
       if (input[0] == "passwd") {
-        if (input.size() == 2 && account_system.get_privilege(input[1]) != 7) {
+        if (input.size() == 3 && account_system.get_privilege(input[1]) != 7) {
           cout << "Invalid\n";
           continue;
         }
-        if (input.size() == 2) {
+        if (input.size() == 3) {
           account_system.rootChangePassword(input[1], input[2]);
         } else {
           account_system.ChangePassword(input[1], input[2], input[3]);
