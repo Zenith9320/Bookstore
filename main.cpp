@@ -45,6 +45,19 @@ int main() {
       //退出程序
       if (input.size() == 0) continue;
       if (input[0] == "exit" || input[0] == "quit") {
+        remove("Account_index_file.dat");
+        remove("Account_value_file.dat");
+        remove("FinanceList.dat");
+        remove("ISBN_Book_index_file.dat");
+        remove("ISBN_Book_value_file.dat");
+        remove("author_ISBN_index_file.dat");
+        remove("author_ISBN_value_file.dat");
+        remove("keywords_ISBN_index_file.dat");
+        remove("keywords_ISBN_value_file.dat");
+        remove("name_ISBN_index_file.dat");
+        remove("name_ISBN_value_file.dat");
+        remove("price_ISBN_index_file.dat");
+        remove("price_ISBN_value_file.dat");
         return 0;
       }
 

@@ -97,9 +97,7 @@ public:
     auto current_account = LogStack.top();
     if (priv > current_account.privilege) { cout << "Invalid\n"; return; } 
     Account New_member(ID, pswd,  priv, name);
-    std::cout << New_member.UserID << '\n';
     AccountList.Insert(ID, New_member);
-    std::cout << AccountList.if_find(ID) << '\n';
   }
   void Delete(string ID) {
     auto current_account = LogStack.top();

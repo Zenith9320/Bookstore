@@ -86,12 +86,9 @@ bool cmp(const Key_Value<T>& Key_Value1, const Key_Value<T>& Key_Value2) {
 
 template <class T>
 void insertKeyvalue(Block<T> &block1, Key_Value<T> &kv) {
-    std::cout << "InsertKeyValue" << std::endl;
     block1.KeyValues[block1.KeyValue_num] = kv;
     block1.KeyValue_num++;
-    std::cout << block1.KeyValue_num << std::endl;
     if (strcmp(block1.KeyValues[block1.KeyValue_num - 1].key, kv.key) == 0) {
-        std::cout << "success!" << '\n';
     }
     for (int j = block1.KeyValue_num - 1; j >= 1; --j) {//冒泡维护数据顺序
         if (cmp(block1.KeyValues[j - 1], block1.KeyValues[j])) {
@@ -162,8 +159,6 @@ public:
         //获取索引文件中的当前位置
         int index_pos = 0;
         index_file.get_info(index_pos, 2);
-        std::cout << "index_number: " << index_number << std::endl;
-        std::cout << "index_pos: " << index_pos << std::endl;
         if (index_number == 0) {
             block.KeyValues[0] = KeyValue;
             block.KeyValue_num++;
@@ -179,10 +174,7 @@ public:
             // 插入键值对
             if (strcmp(index.end_key, key.c_str()) >= 0 || index.next_offset == -1) {
                 block_pos = index.offset;
-                
-                std::cout << "block_pos: " << block_pos << std::endl;
                 block_file.read(block, block_pos);
-                std::cout << "6666" << std::endl;
                 // 若Block满了就需要裂块
                 if (block.KeyValue_num == BLOCK_SIZE) {
                     Block<T> new_block;
