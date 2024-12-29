@@ -11,17 +11,17 @@ using std::string;
 using std::stack;
 
 struct Account {
-  string UserID;
-  string password;
+  char UserID[31];
+  char password[31];
   int privilege;
-  string UserName;
+  char UserName[31];
 
   Account & operator = (const Account& other) {
     if (this != &other) {
-      UserID = other.UserID;
-      password = other.password;
+      strcpy(UserID, other.UserID);
+      strcpy(password, other.password);
       privilege = other.privilege;
-      UserName = other.UserName;
+      strcpy(UserName, other.UserName);
     }
     return *this;
   }
@@ -29,10 +29,18 @@ struct Account {
   Account() : UserID(""), password(""), privilege(0), UserName("") {};
 
   Account(string ID, string pswd, string name) 
-  : UserID(ID), password(pswd), privilege(1), UserName(name){};
+  : privilege(1) {
+    strcpy(UserID, ID.c_str());
+    strcpy(password, pswd.c_str());
+    strcpy(UserName, name.c_str());
+  };
 
   Account(string ID, string pswd, int priv, string name) 
-  : UserID(ID), password(pswd), privilege(priv), UserName(name) {};
+  : privilege(priv) {
+    strcpy(UserID, ID.c_str());
+    strcpy(password, pswd.c_str());
+    strcpy(UserName, name.c_str());
+  };
 };
 
 inline bool operator == (const Account& account1, const Account& account2) {
@@ -56,6 +64,9 @@ private:
 public:
   AccountSystem() : AccountList("Account_", "index_file.dat", "value_file.dat") {
     select_book = "";
+    Account root_account("root", "sjtu", 7, "root");
+    string temp = "root";
+    AccountList.Insert(temp.c_str(), root_account);
   }
   ~AccountSystem() {
     while (!LogStack.empty()) LogStack.pop();
@@ -86,7 +97,9 @@ public:
     auto current_account = LogStack.top();
     if (priv > current_account.privilege) { cout << "Invalid\n"; return; } 
     Account New_member(ID, pswd,  priv, name);
+    std::cout << New_member.UserID << '\n';
     AccountList.Insert(ID, New_member);
+    std::cout << AccountList.if_find(ID) << '\n';
   }
   void Delete(string ID) {
     auto current_account = LogStack.top();
@@ -107,10 +120,10 @@ public:
     Account target = AccountList.FindSingle(ID);
     if (target.password != Cur) { cout << "Invalid\n"; return; }
     if (target.privilege < 1) { cout << "Invalid\n"; return; }
-    target.password = New;
+    strcpy(target.password, New.c_str());
   }
   void Logout() {
-    if (LogStack.empty()) { cout << "Inv, privilege(priv)alid\n"; return; }
+    if (LogStack.empty()) { cout << "Invalid\n"; return; }
     LogStack.pop();
     select_book = "";
   }
@@ -119,12 +132,6 @@ public:
     Account target = AccountList.FindSingle(ID);
     if (pswd != target.password) { cout << "Invalid\n"; return; }
     LogStack.push(target);
-  }
-  void rootLogin(string pswd) {
-    Account* root_account = new Account("root", pswd, 7 , "");
-    LogStack.push(*root_account); 
-    AccountList.Insert("root", *root_account);
-    delete root_account;
   }
   void Login_nopswd(string ID) {
     if (!AccountList.if_find(ID)) { cout << "Invalid\n"; return; }
@@ -135,7 +142,7 @@ public:
   void rootChangePassword(string ID, string pswd) {
     if (!AccountList.if_find(ID)) { cout << "Invalid\n"; return; }
     Account target = AccountList.FindSingle(ID);
-    target.password = pswd;
+    strcpy(target.password, pswd.c_str());
   }
   int get_account_num() {
     return LogStack.size();
