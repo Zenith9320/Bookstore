@@ -62,7 +62,7 @@ private:
   string select_book;
 
 public:
-  AccountSystem() : AccountList("Account_", "index_file.dat", "value_file.dat") {
+  AccountSystem() : AccountList("Bookstore_Account_", "index_file.dat", "value_file.dat") {
     select_book = "";
     Account root_account("root", "sjtu", 7, "root");
     string temp = "root";

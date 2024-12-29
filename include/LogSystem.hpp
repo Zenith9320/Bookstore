@@ -21,7 +21,7 @@ private:
   Vector<Finance> FinanceList;
 
 public:
-  LogSystem() : FinanceList("FinanceList.dat") {};
+  LogSystem() : FinanceList("Bookstore_FinanceList.dat") {};
   ~LogSystem() {
     FinanceList.clear();
   }

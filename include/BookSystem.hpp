@@ -80,11 +80,11 @@ private:
   //当前选中的书
   Book select_book;
 public:
-  BookSystem() : name_ISBN_list("name_ISBN_", "index_file.dat", "value_file.dat"),
-                 author_ISBN_list("author_ISBN_", "index_file.dat", "value_file.dat"),
-                 keywords_ISBN_list("keywords_ISBN_", "index_file.dat", "value_file.dat"),
-                 price_ISBN_list("price_ISBN_", "index_file.dat", "value_file.dat"),
-                 ISBN_Book_list("ISBN_Book_", "index_file.dat", "value_file.dat") 
+  BookSystem() : name_ISBN_list("Bookstore_name_ISBN_", "index_file.dat", "value_file.dat"),
+                 author_ISBN_list("Bookstore_author_ISBN_", "index_file.dat", "value_file.dat"),
+                 keywords_ISBN_list("Bookstore_keywords_ISBN_", "index_file.dat", "value_file.dat"),
+                 price_ISBN_list("Bookstore_price_ISBN_", "index_file.dat", "value_file.dat"),
+                 ISBN_Book_list("Bookstore_ISBN_Book_", "index_file.dat", "value_file.dat") 
                  {
     select_book = Book();
   }
