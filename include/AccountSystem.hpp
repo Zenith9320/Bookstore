@@ -85,23 +85,23 @@ public:
   void Register(string ID, string pswd, string name) {
     Account New_member(ID, pswd, name);
     auto current_account = LogStack.top();
-    if (AccountList.if_find(ID)) { cout << "Invalid\n"; return; }
+    if (AccountList.if_find(ID)) { cout << "Invalid: already have account\n"; return; }
     AccountList.Insert(ID, New_member);
   }
   void UserAdd(string ID, string pswd, int priv, string name) {
-    if (AccountList.if_find(ID)) { cout << "Invalid\n"; return; }
+    if (AccountList.if_find(ID)) { cout << "Invalid:already have account\n"; return; }
     auto current_account = LogStack.top();
-    if (priv > current_account.privilege) { cout << "Invalid\n"; return; } 
+    if (priv > current_account.privilege) { cout << "Invalid: priv wrong\n"; return; } 
     Account New_member(ID, pswd,  priv, name);
     AccountList.Insert(ID, New_member);
   }
   void Delete(string ID) {
     auto current_account = LogStack.top();
-    if (current_account.privilege != 7) { cout << "Invalid\n"; return; }
-    if (!AccountList.if_find(ID)) { cout << "Invalid\n"; return; }
+    if (current_account.privilege != 7) { cout << "Invalid: priv low\n"; return; }
+    if (!AccountList.if_find(ID)) { cout << "Invalid: no target account\n"; return; }
     stack<Account> temp = LogStack;
     while (!temp.empty()) {
-      if (ID == temp.top().UserID) { cout << "Invalid\n"; return; }
+      if (ID == temp.top().UserID) { cout << "Invalid: already login\n"; return; }
       temp.pop();
     }
     auto temp1 = AccountList.FindKey(ID);
@@ -110,29 +110,28 @@ public:
     AccountList.DeleteKeyValue(ID, temp2);
   }
   void ChangePassword(string ID, string Cur, string New) {
-    if (!AccountList.if_find(ID)) { cout << "Invalid\n"; return; }
+    if (!AccountList.if_find(ID)) { cout << "Invalid:no target account\n"; return; }
     Account target = AccountList.FindSingle(ID);
-    if (target.password != Cur) { cout << "Invalid\n"; return; }
-    if (target.privilege < 1) { cout << "Invalid\n"; return; }
+    if (target.password != Cur) { cout << "Invalid: passwd wrong\n"; return; }
     AccountList.DeleteKeyValue(ID, target);
     strcpy(target.password, New.c_str());
     AccountList.Insert(ID, target);
   }
   void Logout() {
-    if (LogStack.empty()) { cout << "Invalid\n"; return; }
+    if (LogStack.empty()) { cout << "Invalid: no account login\n"; return; }
     LogStack.pop();
     select_book = "";
   }
   void Login(string ID, string pswd) {
-    if (!AccountList.if_find(ID)) { cout << "Invalid\n"; return; }
+    if (!AccountList.if_find(ID)) { cout << "Invalid:no target account\n"; return; }
     Account target = AccountList.FindSingle(ID);
-    if (pswd != target.password) { cout << "Invalid\n"; return; }
+    if (pswd != target.password) { cout << "Invalid: password wrong\n"; return; }
     LogStack.push(target);
   }
   void Login_nopswd(string ID) {
-    if (!AccountList.if_find(ID)) { cout << "Invalid\n"; return; }
+    if (!AccountList.if_find(ID)) { cout << "Invalid: no target account\n"; return; }
     Account target = AccountList.FindSingle(ID);
-    if (LogStack.top().privilege <= target.privilege) { cout << "Invalid\n"; return; }
+    if (LogStack.top().privilege <= target.privilege) { cout << "Invalid: priv low\n"; return; }
     LogStack.push(target);
   }
   void rootChangePassword(string ID, string pswd) {

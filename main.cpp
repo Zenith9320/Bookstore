@@ -25,7 +25,7 @@ int main() {
     getline(std::cin, s);
     auto input = GetInput(s);
     bool flag = judge(input);
-    if (!flag && s != "") cout << "Invalid\n";
+    if (!flag && s != "") cout << "Invalid: syntax error\n";
     else {
       //退出程序
       if (input.size() == 0) continue;
@@ -100,7 +100,7 @@ int main() {
 
       //修改密码
       if (input[0] == "passwd") {
-        if (input.size() == 3 && account_system.get_privilege(input[1]) != 7) {
+        if (input.size() == 3 && account_system.get_current_privilege() != 7) {
           cout << "Invalid\n";
           continue;
         }
