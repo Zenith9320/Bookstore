@@ -105,7 +105,6 @@ int main() {
           continue;
         }
         if (input.size() == 3) {
-          std::cout << "change the password of root\n";
           account_system.rootChangePassword(input[1], input[2]);
         } else {
           account_system.ChangePassword(input[1], input[2], input[3]);
