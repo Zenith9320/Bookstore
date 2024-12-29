@@ -14,18 +14,17 @@ using std::set;
 using std::cout;
 
 struct Book {
-  string ISBN;
-  string name;
-  string author;
-  vector<string> keywords;
+  char ISBN[21];
+  char name[61];
+  char author[61];
+  char keywords[61];
   double price;
   int quantity;
   Book& operator = (const Book& other) {
     if (this != &other) {
-      ISBN = other.ISBN;
-      name = other.name;
-      author = other.author;
-      keywords = other.keywords;
+      strcpy(ISBN, other.ISBN);
+      strcpy(name, other.name);
+      strcpy(author, other.author);
       price = other.price;
       quantity = other.quantity;
     }
@@ -33,16 +32,24 @@ struct Book {
   }
   Book() = default;
   Book(string ISBN, string name, string author, vector<string> keywords, double price, int quantity)
-  : ISBN(ISBN), name(name), author(author), keywords(keywords), price(price), quantity(quantity) {};
-  Book(string ISBN) : ISBN(ISBN) {};
+  : price(price), quantity(quantity) {
+    strcpy(this->ISBN, ISBN.c_str());
+    strcpy(this->name, name.c_str());
+    strcpy(this->author, author.c_str());
+  };
+  Book(string ISBN) {
+    strcpy(this->ISBN, ISBN.c_str());
+    strcpy(this->name, "");
+    strcpy(this->author, "");
+    strcpy(this->keywords, "");
+    price = 0;
+    quantity = 0;
+  };
 
   //按照格式输出图书信息
   void outputBook(const Book& output) const {
-    cout << output.ISBN << '\t' << output.name << '\t' << output.author << '\t';
-    for (int i = 0; i < keywords.size(); i++) {
-      cout << keywords[i] << '|';
-    }
-    cout << '\t' << output.price << '\t' << output.quantity << '\n';
+    cout << output.ISBN << '\t' << output.name << '\t' << output.author << '\t'<< output.keywords 
+    << '\t' << output.price << '\t' << output.quantity << '\n';
   }
 };
 
@@ -77,7 +84,8 @@ public:
                  author_ISBN_list("author_ISBN_", "index_file.dat", "value_file.dat"),
                  keywords_ISBN_list("keywords_ISBN_", "index_file.dat", "value_file.dat"),
                  price_ISBN_list("price_ISBN_", "index_file.dat", "value_file.dat"),
-                 ISBN_Book_list("ISBN_Book_", "index_file.dat", "value_file.dat") {
+                 ISBN_Book_list("ISBN_Book_", "index_file.dat", "value_file.dat") 
+                 {
     select_book = Book();
   }
   ~BookSystem() {
@@ -217,21 +225,21 @@ public:
         cout << "Invalid\n";
         return;
       }
-      new_book.ISBN = content;
+      strcpy(new_book.ISBN, content.c_str());
       ISBN_Book_list.DeleteKeyValue(select_book.ISBN, select_book);
       ISBN_Book_list.Insert(content, new_book);
       select_book = new_book;
     }
     if (modifytype == "name") {
       Book new_book = select_book;
-      new_book.name = content;
+      strcpy(new_book.name, content.c_str());
       ISBN_Book_list.DeleteKeyValue(select_book.ISBN, select_book);
       ISBN_Book_list.Insert(select_book.ISBN, new_book);
       select_book = new_book;
     }
     if (modifytype == "author") {
       Book new_book = select_book;
-      new_book.author = content;
+      strcpy(new_book.author, content.c_str());
       ISBN_Book_list.DeleteKeyValue(select_book.ISBN, select_book);
       ISBN_Book_list.Insert(select_book.ISBN, new_book);
       select_book = new_book;
@@ -252,7 +260,7 @@ public:
         }
       }
       Book new_book = select_book;
-      new_book.keywords = keywords;
+      strcpy(new_book.keywords, content.c_str());
       ISBN_Book_list.DeleteKeyValue(select_book.ISBN, select_book);
       ISBN_Book_list.Insert(select_book.ISBN, new_book);
       select_book = new_book;
@@ -267,7 +275,7 @@ public:
   }
 
   void modify(const vector<string>& orders) {
-    if (select_book.ISBN == "") {
+    if (select_book.ISBN[0] == '\0') {
       cout << "Invalid\n";
       return;
     }
@@ -291,7 +299,7 @@ public:
   }
 
   void import(const string& quantity, const string& TotalCost) {
-    if (select_book.ISBN == "") {
+    if (select_book.ISBN[0] == '\0') {
       cout << "Invalid\n";
       return;
     }
