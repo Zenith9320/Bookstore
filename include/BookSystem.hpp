@@ -54,15 +54,15 @@ struct Book {
 };
 
 inline bool operator < (const Book& book1, const Book& book2) {
-  return book1.ISBN < book2.ISBN;
+  return strcmp(book1.ISBN, book2.ISBN) < 0;  
 };
 
 inline bool operator > (const Book& book1, const Book& book2) {
-  return book1.ISBN > book2.ISBN;
+  return strcmp(book1.ISBN, book2.ISBN) > 0;
 };
 
 inline bool operator == (const Book& book1, const Book& book2) {
-  return book1.ISBN == book2.ISBN;
+  return strcmp(book1.ISBN, book2.ISBN) == 0;
 };
 
 class BookSystem {

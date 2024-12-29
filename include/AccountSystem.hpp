@@ -44,15 +44,15 @@ struct Account {
 };
 
 inline bool operator == (const Account& account1, const Account& account2) {
-  return account1.UserID == account2.UserID;
+  return (strcmp(account1.UserID, account2.UserID) == 0);
 }
 
 inline bool operator > (const Account& account1, const Account& account2) {
-  return account1.UserID > account2.UserID;
+  return (strcmp(account1.UserID, account2.UserID) > 0);
 }
 
 inline bool operator < (const Account& account1, const Account& account2) {
-  return account1.UserID < account2.UserID;
+  return (strcmp(account1.UserID, account2.UserID) < 0);
 }
 
 class AccountSystem {
@@ -85,10 +85,6 @@ public:
   void Register(string ID, string pswd, string name) {
     Account New_member(ID, pswd, name);
     auto current_account = LogStack.top();
-    if (current_account.privilege != 0 && current_account.privilege != 1) {
-      cout << "Invalid\n";
-      return;
-    }
     if (AccountList.if_find(ID)) { cout << "Invalid\n"; return; }
     AccountList.Insert(ID, New_member);
   }
@@ -118,7 +114,9 @@ public:
     Account target = AccountList.FindSingle(ID);
     if (target.password != Cur) { cout << "Invalid\n"; return; }
     if (target.privilege < 1) { cout << "Invalid\n"; return; }
+    AccountList.DeleteKeyValue(ID, target);
     strcpy(target.password, New.c_str());
+    AccountList.Insert(ID, target);
   }
   void Logout() {
     if (LogStack.empty()) { cout << "Invalid\n"; return; }
@@ -140,7 +138,10 @@ public:
   void rootChangePassword(string ID, string pswd) {
     if (!AccountList.if_find(ID)) { cout << "Invalid\n"; return; }
     Account target = AccountList.FindSingle(ID);
+    AccountList.DeleteKeyValue(ID, target);
     strcpy(target.password, pswd.c_str());
+    AccountList.Insert(ID, target);
+    target = AccountList.FindSingle(ID);
   }
   int get_account_num() {
     return LogStack.size();
