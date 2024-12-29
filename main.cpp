@@ -19,45 +19,17 @@ int main() {
   LogSystem log_system;
   BookSystem book_system;
   AccountSystem account_system;
-  
-  std::vector <string> files = 
-  {"Account_index_file.dat", 
-  "Account_value_file.dat", 
-  "FinanceList.dat", 
-  "ISBN_Book_index_file.dat", 
-  "ISBN_Book_value_file.dat", 
-  "author_ISBN_index_file.dat", 
-  "author_ISBN_value_file.dat", 
-  "keywords_ISBN_index_file.dat", 
-  "keywords_ISBN_value_file.dat", 
-  "name_ISBN_index_file.dat", 
-  "name_ISBN_value_file.dat", 
-  "price_ISBN_index_file.dat", 
-  "price_ISBN_value_file.dat"};
 
   while (true) {
     string s;
     getline(std::cin, s);
     auto input = GetInput(s);
     bool flag = judge(input);
-    if (!flag && s != "") cout << "Invalid\n";
+    if (!flag && s != "") cout << "Invalid: syntax error\n";
     else {
       //退出程序
       if (input.size() == 0) continue;
       if (input[0] == "exit" || input[0] == "quit") {
-        remove("/home/entong/Bookstore/Account_index_file.dat");
-        remove("/home/entong/Bookstore/Account_value_file.dat");
-        remove("/home/entong/Bookstore/FinanceList.dat");
-        remove("/home/entong/Bookstore/ISBN_Book_index_file.dat");
-        remove("/home/entong/Bookstore/ISBN_Book_value_file.dat");
-        remove("/home/entong/Bookstore/author_ISBN_index_file.dat");
-        remove("/home/entong/Bookstore/author_ISBN_value_file.dat");
-        remove("/home/entong/Bookstore/keywords_ISBN_index_file.dat");
-        remove("/home/entong/Bookstore/keywords_ISBN_value_file.dat");
-        remove("/home/entong/Bookstore/name_ISBN_index_file.dat");
-        remove("/home/entong/Bookstore/name_ISBN_value_file.dat");
-        remove("/home/entong/Bookstore/price_ISBN_index_file.dat");
-        remove("/home/entong/Bookstore/price_ISBN_value_file.dat");
         return 0;
       }
 
@@ -107,6 +79,7 @@ int main() {
           continue;
         }
         if (input.size() == 3) {
+          std::cout << "change the password of root\n";
           account_system.rootChangePassword(input[1], input[2]);
         } else {
           account_system.ChangePassword(input[1], input[2], input[3]);
