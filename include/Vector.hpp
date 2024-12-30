@@ -23,7 +23,7 @@ public:
   }
   ~Vector() = default;
   void clear() {
-    std::ofstream outfile(file, std::ios::binary);
+    std::ofstream outfile(file, std::ios::trunc);
     outfile.close();
   }
   void push_back(const T& value) {
