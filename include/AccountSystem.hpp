@@ -15,7 +15,7 @@ struct Account {
   char password[31];
   int privilege;
   char UserName[31];
-  string select_book;
+  char select_book[61];
 
   Account & operator = (const Account& other) {
     if (this != &other) {
@@ -23,6 +23,7 @@ struct Account {
       strcpy(password, other.password);
       privilege = other.privilege;
       strcpy(UserName, other.UserName);
+      strcpy(select_book, other.select_book);
     }
     return *this;
   }
@@ -30,17 +31,21 @@ struct Account {
   Account() : UserID(""), password(""), privilege(0), UserName(""), select_book("") {};
 
   Account(string ID, string pswd, string name) 
-  : privilege(1), select_book("") {
+  : privilege(1) {
     strcpy(UserID, ID.c_str());
     strcpy(password, pswd.c_str());
     strcpy(UserName, name.c_str());
+    string blank = "";
+    strcpy(select_book, blank.c_str());
   };
 
   Account(string ID, string pswd, int priv, string name) 
-  : privilege(priv), select_book("") {
+  : privilege(priv) {
     strcpy(UserID, ID.c_str());
     strcpy(password, pswd.c_str());
     strcpy(UserName, name.c_str());
+    string blank = "";
+    strcpy(select_book, blank.c_str());
   };
 };
 
@@ -117,7 +122,8 @@ public:
   }
   void Logout() {
     if (LogStack.empty()) { cout << "Invalid: no account login\n"; return; }
-    LogStack.top().select_book = "";
+    string temp = "";
+    strcpy(LogStack.top().select_book, temp.c_str());
     LogStack.pop();
   }
   void Login(string ID, string pswd) {
@@ -149,7 +155,7 @@ public:
       return;
     }
     else {
-      LogStack.top().select_book = target;
+      strcpy(LogStack.top().select_book, target.c_str());
     }
   }
   string get_select_book() {
