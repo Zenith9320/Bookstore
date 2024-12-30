@@ -103,6 +103,8 @@ int main() {
       if (input[0] == "logout") {
         account_system.Logout();
         book_system.clear_select_book();
+        auto temp = account_system.get_select_book();
+        book_system.set_select_book(temp);
       }
 
       //注册

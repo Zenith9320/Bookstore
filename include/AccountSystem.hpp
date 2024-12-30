@@ -15,6 +15,7 @@ struct Account {
   char password[31];
   int privilege;
   char UserName[31];
+  string select_book;
 
   Account & operator = (const Account& other) {
     if (this != &other) {
@@ -26,17 +27,17 @@ struct Account {
     return *this;
   }
   
-  Account() : UserID(""), password(""), privilege(0), UserName("") {};
+  Account() : UserID(""), password(""), privilege(0), UserName(""), select_book("") {};
 
   Account(string ID, string pswd, string name) 
-  : privilege(1) {
+  : privilege(1), select_book("") {
     strcpy(UserID, ID.c_str());
     strcpy(password, pswd.c_str());
     strcpy(UserName, name.c_str());
   };
 
   Account(string ID, string pswd, int priv, string name) 
-  : privilege(priv) {
+  : privilege(priv), select_book("") {
     strcpy(UserID, ID.c_str());
     strcpy(password, pswd.c_str());
     strcpy(UserName, name.c_str());
@@ -59,11 +60,9 @@ class AccountSystem {
 private:
   Blocklist<Account> AccountList;
   stack<Account> LogStack;
-  string select_book;
 
 public:
   AccountSystem() : AccountList("Bookstore_Account_", "index_file.dat", "value_file.dat") {
-    select_book = "";
     Account root_account("root", "sjtu", 7, "root");
     string temp = "root";
     AccountList.Insert(temp.c_str(), root_account);
@@ -71,7 +70,6 @@ public:
   ~AccountSystem() {
     while (!LogStack.empty()) LogStack.pop();
     AccountList.clearall();
-    select_book = "";
     LogStack = stack<Account>();
   };
   int get_current_privilege() {
@@ -119,8 +117,8 @@ public:
   }
   void Logout() {
     if (LogStack.empty()) { cout << "Invalid: no account login\n"; return; }
+    LogStack.top().select_book = "";
     LogStack.pop();
-    select_book = "";
   }
   void Login(string ID, string pswd) {
     if (!AccountList.if_find(ID)) { cout << "Invalid:no target account\n"; return; }
@@ -144,6 +142,19 @@ public:
   }
   int get_account_num() {
     return LogStack.size();
+  }
+  void set_select_book(const string& target) {
+    if (LogStack.empty()) {
+      std::cout << "Invalid\n";
+      return;
+    }
+    else {
+      LogStack.top().select_book = target;
+    }
+  }
+  string get_select_book() {
+    if (LogStack.empty()) return "";
+    return LogStack.top().select_book;
   }
 };
 
