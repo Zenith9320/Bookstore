@@ -146,11 +146,14 @@ public:
         Block<T> init_block;
         std::ifstream file(index_file.file_name, std::ios::binary);
         //创建文件
-        index_file.initialise();
-        block_file.initialise();
-        init_index.offset = block_file.write(init_block);//写入第一个block
-        index_file.write_info(1, 1);
-        index_file.write_info(index_file.write(init_index), 2);//写入偏移量
+        if (!file.is_open()) {
+            index_file.initialise();
+            block_file.initialise();
+            init_index.offset = block_file.write(init_block);//写入第一个block
+            index_file.write_info(1, 1);
+            index_file.write_info(index_file.write(init_index), 2);//写入偏移量            
+        }
+
     }
 
     ~Blocklist() = default;
