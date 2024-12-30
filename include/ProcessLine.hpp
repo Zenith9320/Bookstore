@@ -100,11 +100,12 @@ inline bool judgequantity(const string& s) {
 //检验和price有关的变量和合法性
 inline bool judgeprice(const string& s) {
   if (s.size() > 13) return false;
-  for (int i = 0; i < s.size() - 3; i++) {
-    if (!isdigit(s[i])) return false;
+  for (int i = 0; i < s.size(); i++) {
+    if (!isdigit(s[i]) && s[i] != '.') return false;
+    if (s[i] == '.' && i == 0) return false;
+    if (s[i] == '.' && i == s.size() - 1) return false;
+    if (s[i] == '.' && s.size() - i > 3) return false;
   }
-  if (s[s.size() - 3] != '.') return false;
-  if (!isdigit(s[s.size() - 1]) || !isdigit(s[s.size() - 2])) return false;
   return true;
 }
 
@@ -178,7 +179,8 @@ inline bool judge(const vector<string> &input) {
     if (command == "exit" 
     || command == "quit" 
     || command == "log" 
-    || command == "logout") return true;
+    || command == "logout" 
+    || command == "show") return true;
     else return false;
   }
   else {
@@ -230,7 +232,8 @@ inline bool judge(const vector<string> &input) {
     }
     if (command == "show") {
       if ((length == 2 && judge_show_query(input[1])) 
-      || length == 1) return true;
+      || length == 1 || (length == 2 && input[1] == "finance") 
+      || (length == 3 && input[1] == "finance")) return true;
       return false;
     }
     if (command == "buy") {
