@@ -263,11 +263,11 @@ public:
       Book select_book = ISBN_Book_list.FindSingle(select_book_ISBN);
       Book new_book = select_book;
       if (strcmp(new_book.ISBN, content.c_str()) == 0) {
-        cout << "Invalid: same ISBN\n";
+        cout << "Invalid\n";
         return;
       } 
       if (ISBN_Book_list.if_find(content)) {
-        cout << "Invalid : already have this ISBN\n";
+        cout << "Invalid\n";
         return;
       }
       string name1 = select_book.name;
@@ -361,14 +361,13 @@ public:
       price_ISBN_list.Insert(std::to_string(new_book.price), temp1);
       ISBN_Book_list.DeleteKeyValue(select_book.ISBN, select_book);
       ISBN_Book_list.Insert(select_book.ISBN, new_book);
-      std::cout << (*ISBN_Book_list.FindKey(select_book.ISBN).begin()).price << '\n';
     }
   }
 
   void modify(const vector<string>& orders) {
     Book select_book = ISBN_Book_list.FindSingle(select_book_ISBN);
     if (select_book.ISBN[0] == '\0') {
-      cout << "Invalid: no books selected\n";
+      cout << "Invalid\n";
       return;
     }
     std::set<string> modifytypes;
@@ -380,7 +379,7 @@ public:
         modifytype += order[i];
       }
       if (modifytypes.find(modifytype) != modifytypes.end()) {
-        cout << "Invalid: repeated modification\n";
+        cout << "Invalid\n";
         return;
       }
       modifytypes.insert(modifytype);

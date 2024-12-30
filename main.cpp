@@ -25,7 +25,7 @@ int main() {
     getline(std::cin, s);
     auto input = GetInput(s);
     bool flag = judge(input);
-    if (!flag && s != "") cout << "Invalid: syntax error\n";
+    if (!flag && s != "") cout << "Invalid\n";
     else {
       //退出程序
       if (input.size() == 0) continue;
@@ -172,7 +172,6 @@ int main() {
         book_system.buy(input[1], input[2]);
         if (origin_quantity >= std::stoi(input[2])) {
           log_system.record_income(book_system.get_book(input[1]).price * std::stoi(input[2]));
-          std::cout << "buy success\n";
         }
       }
 
