@@ -15,7 +15,6 @@ struct Account {
   char password[31];
   int privilege;
   char UserName[31];
-  char select_book[61];
 
   Account & operator = (const Account& other) {
     if (this != &other) {
@@ -23,12 +22,11 @@ struct Account {
       strcpy(password, other.password);
       privilege = other.privilege;
       strcpy(UserName, other.UserName);
-      strcpy(select_book, other.select_book);
     }
     return *this;
   }
   
-  Account() : UserID(""), password(""), privilege(0), UserName(""), select_book("") {};
+  Account() : UserID(""), password(""), privilege(0), UserName("") {};
 
   Account(string ID, string pswd, string name) 
   : privilege(1) {
@@ -36,7 +34,6 @@ struct Account {
     strcpy(password, pswd.c_str());
     strcpy(UserName, name.c_str());
     string blank = "";
-    strcpy(select_book, blank.c_str());
   };
 
   Account(string ID, string pswd, int priv, string name) 
@@ -45,7 +42,6 @@ struct Account {
     strcpy(password, pswd.c_str());
     strcpy(UserName, name.c_str());
     string blank = "";
-    strcpy(select_book, blank.c_str());
   };
 };
 
@@ -73,8 +69,9 @@ public:
     AccountList.Insert(temp.c_str(), root_account);
   }
   ~AccountSystem() {
-    while (!LogStack.empty()) LogStack.pop();
-    AccountList.clearall();
+    while (!LogStack.empty()) {
+      LogStack.pop();
+    }
     LogStack = stack<Account>();
   };
   int get_current_privilege() {
@@ -123,7 +120,6 @@ public:
   void Logout() {
     if (LogStack.empty()) { cout << "Invalid\n"; return; }
     string temp = "";
-    strcpy(LogStack.top().select_book, temp.c_str());
     LogStack.pop();
   }
   void Login(string ID, string pswd) {
@@ -148,19 +144,6 @@ public:
   }
   int get_account_num() {
     return LogStack.size();
-  }
-  void set_select_book(const string& target) {
-    if (LogStack.empty()) {
-      std::cout << "Invalid\n";
-      return;
-    }
-    else {
-      strcpy(LogStack.top().select_book, target.c_str());
-    }
-  }
-  string get_select_book() {
-    if (LogStack.empty()) return "";
-    return LogStack.top().select_book;
   }
 };
 

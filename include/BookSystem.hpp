@@ -3,6 +3,7 @@
 
 #include "BlockList.hpp"
 #include "LogSystem.hpp"
+#include "Vector.hpp"
 #include <vector>
 #include <set>
 #include <iostream>
@@ -122,16 +123,23 @@ private:
   Blocklist<Book> ISBN_Book_list;
   //当前选中的书
   string select_book_ISBN;
+  //登录栈对应的选中的书构成的栈
+  Vector<String> select_books;
 public:
   BookSystem() : name_ISBN_list("Bookstore_name_ISBN_", "index_file.dat", "value_file.dat"),
                  author_ISBN_list("Bookstore_author_ISBN_", "index_file.dat", "value_file.dat"),
                  keywords_ISBN_list("Bookstore_keywords_ISBN_", "index_file.dat", "value_file.dat"),
                  price_ISBN_list("Bookstore_price_ISBN_", "index_file.dat", "value_file.dat"),
-                 ISBN_Book_list("Bookstore_ISBN_Book_", "index_file.dat", "value_file.dat") 
+                 ISBN_Book_list("Bookstore_ISBN_Book_", "index_file.dat", "value_file.dat"),
+                 select_books("Bookstore_select_books.dat")
                  {
     select_book_ISBN = "";
   }
-  ~BookSystem() = default;
+  ~BookSystem() {
+    ofstream tempfile("Bookstore_select_books.dat", std::ios::trunc);
+    tempfile.close();
+    clear_select_book();
+  }
   void clear_select_book() {
     select_book_ISBN = "";
   }
@@ -244,6 +252,8 @@ public:
       ISBN_Book_list.Insert(ISBN, new_book);
     }
     select_book_ISBN = ISBN;
+    String temp(ISBN);
+    select_books[select_books.size() - 1] = temp;
   }
 
   //更改图书的单个信息
@@ -436,6 +446,18 @@ public:
   void output_select_book() {
     Book select_book = ISBN_Book_list.FindSingle(select_book_ISBN);
     outputBook(select_book);
+  }
+  void select_books_add() {
+    String temp;
+    select_books.push_back(temp);
+  }
+  void select_books_pop() {
+    if (select_books.size() == 0) return;
+    select_books.pop_back();
+  }
+  void set_select_book() {
+    string temp = select_books[select_books.size() - 1].str_ISBN;
+    select_book_ISBN = temp;
   }
 };
 #endif

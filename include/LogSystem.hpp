@@ -22,9 +22,7 @@ private:
 
 public:
   LogSystem() : FinanceList("Bookstore_FinanceList.dat") {};
-  ~LogSystem() {
-    FinanceList.clear();
-  }
+  ~LogSystem() {}
   
   //输出所有记录
   void show_finance() {

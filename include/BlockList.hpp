@@ -401,12 +401,6 @@ public:
         index_file.get_info(tmp, 1);
         return tmp;
     }
-    void clearall() {
-        std::ofstream file(index_file.file_name, std::ios::trunc);
-        file.close();
-        std::ofstream file2(block_file.file_name, std::ios::trunc);
-        file2.close();
-    }
 };
 
 #endif 
