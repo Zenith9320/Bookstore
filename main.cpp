@@ -60,12 +60,24 @@ int main() {
       }
 
       //财务记录查询
-      if (input[0] == "show" && input[1] == "finance") {
-        if (input.size() == 2) {
-          log_system.show_finance();
-        } else {
-          int count = std::stoi(input[2]);
-          log_system.show_finance(count);
+      if (input.size() == 2 || input.size() == 3) {
+        if (input[0] == "show" && input[1] == "finance") {
+          if (input.size() == 2) {
+            log_system.show_finance();
+          } else {
+            for (int i = 0; i < input[2].size(); i++) {
+              if (!isdigit(input[2][i])) {
+                cout << "Invalid\n";
+                continue;
+              }
+              if (i == 0 && input[2][i] == '0') {
+                cout << "Invalid\n";
+                continue;
+              }
+            }
+            int count = std::stoi(input[2]);
+            log_system.show_finance(count);
+          }
         }
       }
 
@@ -151,7 +163,7 @@ int main() {
       //购买图书
       if (input[0] == "buy") {
         book_system.buy(input[1], input[2]);
-        log_system.record_income(book_system.get_select_book().price * std::stoi(input[2]));
+        log_system.record_income(book_system.get_book(input[1]).price * std::stoi(input[2]));
       }
 
       //进货
