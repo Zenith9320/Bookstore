@@ -399,9 +399,110 @@ public:
       }
       modifytypes.insert(modifytype);
     }
-    for (int i = 1; i < orders.size(); i++) {
-      modify_single(orders[i]);
+    Book new_book = select_book;
+    for (int j = 1; j < orders.size(); j++) {
+      string modifytype = "";
+      string order = orders[j];
+      for (int i = 1; i < order.size(); i++) {
+        if (order[i] == '=') break;
+        modifytype += order[i];
+      }
+      string content = "";
+      int i = 1;
+      while (order[i] != '=' && i < order.size()) {
+        i++;
+      }
+      i++;
+      while (i < order.size()) {
+        content += order[i];
+        i++;
+      }
+      if (modifytype == "ISBN") {
+        if (strcmp(new_book.ISBN, content.c_str()) == 0) {
+          cout << "Invalid\n";
+          return;
+        } 
+        if (ISBN_Book_list.if_find(content)) {
+          cout << "Invalid\n";
+          return;
+        }
+        string name1 = select_book.name;
+        string author1 = select_book.author;
+        string keywords1 = select_book.keywords;      
+        String temp1(select_book.ISBN);
+        if (select_book.name[0] != '\0') name_ISBN_list.DeleteKeyValue(name1, temp1);
+        if (select_book.author[0] != '\0') author_ISBN_list.DeleteKeyValue(author1, temp1);
+        if (select_book.keywords[0] != '\0') keywords_ISBN_list.DeleteKeyValue(keywords1, temp1);
+        if (std::to_string(select_book.price).size() != 0) price_ISBN_list.DeleteKeyValue(std::to_string(select_book.price), temp1);
+        string key = select_book.ISBN;
+        ISBN_Book_list.DeleteKeyValue(key, select_book);
+        strcpy(new_book.ISBN, content.c_str());
+        key = content;
+        ISBN_Book_list.Insert(key, new_book);
+        select_book = new_book;
+        string ISBN1 = new_book.ISBN;
+        name1 = new_book.name;
+        author1 = new_book.author;
+        keywords1 = new_book.keywords;
+        if (select_book.name[0] != '\0') name_ISBN_list.Insert(name1, ISBN1);
+        if (select_book.author[0] != '\0') author_ISBN_list.Insert(author1, ISBN1);
+        if (select_book.keywords[0] != '\0') keywords_ISBN_list.Insert(keywords1, ISBN1);
+        if (std::to_string(select_book.price).size() != 0) price_ISBN_list.Insert(std::to_string(new_book.price), ISBN1);
+        select_book_ISBN = content;
+      }
+      if (modifytype == "name") {
+        content = content.substr(1, content.size() - 2);
+        strcpy(new_book.name, content.c_str());
+        String temp1(select_book.ISBN);
+        String temp2(new_book.ISBN);
+        name_ISBN_list.DeleteKeyValue(select_book.name, temp1);
+        name_ISBN_list.Insert(new_book.name, temp1);
+      }
+      if (modifytype == "author") {
+        content = content.substr(1, content.size() - 2);
+        strcpy(new_book.author, content.c_str());
+        String temp1(select_book.ISBN);
+        String temp2(new_book.ISBN);
+        author_ISBN_list.DeleteKeyValue(select_book.author, temp1);
+        author_ISBN_list.Insert(new_book.author, temp1);
+      }
+      if (modifytype == "keyword") {
+        content = content.substr(1, content.size() - 2);
+        strcpy(new_book.keywords, content.c_str());
+        String temp1(select_book.ISBN);
+        String temp2(new_book.ISBN);
+        string origin_keywords = select_book.keywords;
+        string now_keywords = new_book.keywords;
+        string temp = "";
+        for (int i = 0; i < origin_keywords.size(); i++) {
+          if (origin_keywords[i] == '|') {
+            keywords_ISBN_list.DeleteKeyValue(temp, temp1);
+            temp = "";
+          } else {
+            temp += origin_keywords[i];
+          }
+        }
+        if (temp.size() != 0) keywords_ISBN_list.DeleteKeyValue(temp, temp1);
+        temp = "";
+        for (int i = 0; i < now_keywords.size(); i++) {
+          if (now_keywords[i] == '|') {
+            keywords_ISBN_list.Insert(temp, temp1);
+            temp = "";
+          } else {
+            temp += now_keywords[i];
+          }
+        }
+      }
+      if (modifytype == "price") {
+        double price = std::stod(content);
+        new_book.price = price;
+        String temp1(select_book.ISBN);
+        price_ISBN_list.DeleteKeyValue(std::to_string(select_book.price), temp1);
+        price_ISBN_list.Insert(std::to_string(new_book.price), temp1);
+      }
     }
+    ISBN_Book_list.DeleteKeyValue(select_book.ISBN, select_book);
+    ISBN_Book_list.Insert(new_book.ISBN, new_book);
   }
 
   void import(const string& quantity, const string& TotalCost) {
