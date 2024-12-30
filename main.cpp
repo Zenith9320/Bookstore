@@ -150,6 +150,10 @@ int main() {
 
       //检索图书
       if (input[0] == "show") {
+        if (account_system.get_current_privilege() < 1) {
+          cout << "Invalid\n";
+          continue;
+        }
         if (input.size() == 1) {
           book_system.showall();
         } else {
@@ -164,14 +168,19 @@ int main() {
 
       //购买图书
       if (input[0] == "buy") {
+        int origin_quantity = book_system.get_quantity(input[1]);
         book_system.buy(input[1], input[2]);
-        log_system.record_income(book_system.get_book(input[1]).price * std::stoi(input[2]));
+        if (origin_quantity >= std::stoi(input[2])) {
+          log_system.record_income(book_system.get_book(input[1]).price * std::stoi(input[2]));
+          std::cout << "buy success\n";
+        }
       }
 
       //进货
       if (input[0] == "import") {
         book_system.import(input[1], input[2]);
-        log_system.record_outcome(std::stod(input[2]));
+        bool judge = book_system.check_select_book();
+        if (judge) log_system.record_outcome(std::stod(input[2]));
       }
     }
   }
