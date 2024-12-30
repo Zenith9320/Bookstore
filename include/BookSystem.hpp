@@ -155,8 +155,12 @@ public:
       i++;
     }
     if (showtype == "ISBN") {
-      auto ans = ISBN_Book_list.FindKey(content);
-      outputBook(*ans.begin());
+      auto ans = ISBN_Book_list.FindSingle(content);
+      if (ans.ISBN[0] == '\0') {
+        cout << '\n';
+        return;
+      }
+      outputBook(ans);
       return;
     }
     if (showtype == "name") {
@@ -292,6 +296,7 @@ public:
       if (select_book.author[0] != '\0') author_ISBN_list.Insert(author1, ISBN1);
       if (select_book.keywords[0] != '\0') keywords_ISBN_list.Insert(keywords1, ISBN1);
       if (std::to_string(select_book.price).size() != 0) price_ISBN_list.Insert(std::to_string(new_book.price), ISBN1);
+      select_book_ISBN = content;
     }
     if (modifytype == "name") {
       content = content.substr(1, content.size() - 2);

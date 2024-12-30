@@ -19,6 +19,9 @@ int main() {
   LogSystem log_system;
   BookSystem book_system;
   AccountSystem account_system;
+  
+  freopen("/home/entong/Bookstore/bookstore-testcases/basic/testcase4.in", "r", stdin);
+  freopen("/home/entong/Bookstore/bookstore-testcases/basic/testcase4(1).out", "w", stdout);
 
   while (true) {
     string s;
