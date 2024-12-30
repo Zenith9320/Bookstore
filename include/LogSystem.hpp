@@ -25,6 +25,19 @@ public:
   ~LogSystem() {
     FinanceList.clear();
   }
+  
+  //输出所有记录
+  void show_finance() {
+    double total_income = 0;
+    double total_outcome = 0;
+    for (int i = 0; i < FinanceList.size(); i++) {
+      Finance finance = FinanceList[i];
+      total_income += finance.income;
+      total_outcome += finance.outcome;
+    }
+    std::cout << "+ " << fixed << setprecision(2) << total_income << " - " << fixed << setprecision(2) << total_outcome << '\n';
+  }
+
   //输出指定笔数的记录
   void show_finance(const int& count) {
     if (count == 0) {
@@ -35,6 +48,10 @@ public:
       std::cout << "Invalid\n";
       return;
     }
+    if (count == FinanceList.size()) {
+      show_finance();
+      return;
+    }
     double total_income = 0;
     double total_outcome = 0;
     for (int i = FinanceList.size() - 1; i >= FinanceList.size() - count; i--) {
@@ -42,18 +59,7 @@ public:
       total_income += finance.income;
       total_outcome += finance.outcome;
     }
-  }
-
-  //输出所有记录
-  void show_finance() {
-    double total_income = 0;
-    double total_outcome = 0;
-    for (int i = 0; i < FinanceList.size(); i++) {
-      Finance finance = FinanceList[i];
-      total_income += finance.income;
-      total_outcome += finance.outcome;
-    }
-    std::cout << fixed << setprecision(2) << total_income << ' ' << fixed << setprecision(2) << total_outcome << '\n';
+    std::cout << "+ " << fixed << setprecision(2) << total_income << " - " << fixed << setprecision(2) << total_outcome << '\n';
   }
 
   //记录一笔收入
