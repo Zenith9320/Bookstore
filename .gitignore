@@ -17,3 +17,6 @@ Bookstore_name_ISBN_index_file.dat
 Bookstore_name_ISBN_value_file.dat
 Bookstore_price_ISBN_index_file.dat
 Bookstore_price_ISBN_value_file.dat
+BookSystem
+include/tempCodeRunnerFile.hpp
+gdb.txt
