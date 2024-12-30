@@ -121,7 +121,7 @@ private:
   //从ISBN到Book的MAP
   Blocklist<Book> ISBN_Book_list;
   //当前选中的书
-  Book select_book;
+  string select_book_ISBN;
 public:
   BookSystem() : name_ISBN_list("Bookstore_name_ISBN_", "index_file.dat", "value_file.dat"),
                  author_ISBN_list("Bookstore_author_ISBN_", "index_file.dat", "value_file.dat"),
@@ -129,11 +129,11 @@ public:
                  price_ISBN_list("Bookstore_price_ISBN_", "index_file.dat", "value_file.dat"),
                  ISBN_Book_list("Bookstore_ISBN_Book_", "index_file.dat", "value_file.dat") 
                  {
-    select_book = Book();
+    select_book_ISBN = "";
   }
   ~BookSystem() = default;
   void clear_select_book() {
-    select_book = Book();
+    select_book_ISBN = "";
   }
   void show(const string& order) {
     set<Book> show_books;
@@ -155,7 +155,9 @@ public:
       i++;
     }
     if (showtype == "ISBN") {
-      show_books = ISBN_Book_list.FindKey(content);
+      auto ans = ISBN_Book_list.FindKey(content);
+      outputBook(*ans.begin());
+      return;
     }
     if (showtype == "name") {
       auto ISBN_set = name_ISBN_list.FindKey(content);
@@ -230,13 +232,14 @@ public:
     //重新插入更改后的图书
     ISBN_Book_list.DeleteKeyValue(ISBN, ISBN_Book_list.FindSingle(ISBN));
     ISBN_Book_list.Insert(ISBN, book);
+    std::cout << fixed << setprecision(2) << book.price * std::stod(quantity) << '\n';
   }  
   void select(const string& ISBN) {
     if (!ISBN_Book_list.if_find(ISBN)) {
       Book new_book(ISBN);
       ISBN_Book_list.Insert(ISBN, new_book);
     }
-    select_book = ISBN_Book_list.FindSingle(ISBN);
+    select_book_ISBN = ISBN;
   }
 
   //更改图书的单个信息
@@ -257,6 +260,7 @@ public:
       i++;
     }
     if (modifytype == "ISBN") {
+      Book select_book = ISBN_Book_list.FindSingle(select_book_ISBN);
       Book new_book = select_book;
       if (strcmp(new_book.ISBN, content.c_str()) == 0) {
         cout << "Invalid: same ISBN\n";
@@ -291,6 +295,7 @@ public:
     }
     if (modifytype == "name") {
       content = content.substr(1, content.size() - 2);
+      Book select_book = ISBN_Book_list.FindSingle(select_book_ISBN);
       Book new_book = select_book;
       strcpy(new_book.name, content.c_str());
       String temp1(select_book.ISBN);
@@ -303,6 +308,7 @@ public:
     }
     if (modifytype == "author") {
       content = content.substr(1, content.size() - 2);
+      Book select_book = ISBN_Book_list.FindSingle(select_book_ISBN);
       Book new_book = select_book;
       strcpy(new_book.author, content.c_str());
       String temp1(select_book.ISBN);
@@ -315,6 +321,7 @@ public:
     }
     if (modifytype == "keyword") {
       content = content.substr(1, content.size() - 2);
+      Book select_book = ISBN_Book_list.FindSingle(select_book_ISBN);
       Book new_book = select_book;
       strcpy(new_book.keywords, content.c_str());
       String temp1(select_book.ISBN);
@@ -346,6 +353,7 @@ public:
     }
     if (modifytype == "price") {
       double price = std::stod(content);
+      Book select_book = ISBN_Book_list.FindSingle(select_book_ISBN);
       Book new_book = select_book;
       new_book.price = price;
       String temp1(select_book.ISBN);
@@ -353,10 +361,12 @@ public:
       price_ISBN_list.Insert(std::to_string(new_book.price), temp1);
       ISBN_Book_list.DeleteKeyValue(select_book.ISBN, select_book);
       ISBN_Book_list.Insert(select_book.ISBN, new_book);
+      std::cout << (*ISBN_Book_list.FindKey(select_book.ISBN).begin()).price << '\n';
     }
   }
 
   void modify(const vector<string>& orders) {
+    Book select_book = ISBN_Book_list.FindSingle(select_book_ISBN);
     if (select_book.ISBN[0] == '\0') {
       cout << "Invalid: no books selected\n";
       return;
@@ -381,6 +391,7 @@ public:
   }
 
   void import(const string& quantity, const string& TotalCost) {
+      Book select_book = ISBN_Book_list.FindSingle(select_book_ISBN);
     if (select_book.ISBN[0] == '\0') {
       cout << "Invalid\n";
       return;
@@ -400,14 +411,27 @@ public:
     ISBN_Book_list.Insert(select_book.ISBN, select_book);
   }
   auto get_select_book() {
+    Book select_book = ISBN_Book_list.FindSingle(select_book_ISBN);
     return select_book;
   }
   auto get_book(const string& ISBN1) {
     Book ans = ISBN_Book_list.FindSingle(ISBN1);
     return ans;
   }
-  void set_select_book(const string& target) {
-    select_book = ISBN_Book_list.FindSingle(target);
+  void set_select_book(const string& target) {    
+    select_book_ISBN = target;
   }  
+  bool check_select_book() {
+    Book select_book = ISBN_Book_list.FindSingle(select_book_ISBN);
+    if (select_book.ISBN[0] == '\0' || !ISBN_Book_list.if_find(select_book.ISBN)) return false;
+    return true;
+  }
+  int get_quantity(const string& target) {
+    return ISBN_Book_list.FindSingle(target).quantity;
+  }
+  void output_select_book() {
+    Book select_book = ISBN_Book_list.FindSingle(select_book_ISBN);
+    outputBook(select_book);
+  }
 };
 #endif
