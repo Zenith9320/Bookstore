@@ -144,6 +144,10 @@ public:
     select_book_ISBN = "";
   }
   void show(const string& order) {
+    if (select_books.size() == 0) {
+      std::cout << "Invalid\n";
+      return;
+    }
     set<Book> show_books;
     string showtype = "";
     for (int i = 1; i < order.size(); i++) {
@@ -209,6 +213,10 @@ public:
     }
   }
   void showall() {
+    if (select_books.size() == 0) {
+      std::cout << "Invalid\n";
+      return;
+    }
     int index_pos = 0;
     int index_number = 0;
     ISBN_Book_list.index_file.get_info(index_number, 1); 
@@ -230,6 +238,10 @@ public:
     }
   }
   void buy(const string& ISBN, const string& quantity) {
+    if (select_books.size() == 0) {
+      std::cout << "Invalid\n";
+      return;
+    }
     if (!ISBN_Book_list.if_find(ISBN)) {
       cout << "Invalid\n";
       return;
@@ -247,6 +259,10 @@ public:
     std::cout << fixed << setprecision(2) << book.price * std::stod(quantity) << '\n';
   }  
   void select(const string& ISBN) {
+    if (select_books.size() == 0) {
+      std::cout << "Invalid\n";
+      return;
+    }
     if (!ISBN_Book_list.if_find(ISBN)) {
       Book new_book(ISBN);
       ISBN_Book_list.Insert(ISBN, new_book);
@@ -380,6 +396,10 @@ public:
   }
 
   void modify(const vector<string>& orders) {
+    if (select_books.size() == 0) {
+      std::cout << "Invalid\n";
+      return;
+    }
     Book select_book = ISBN_Book_list.FindSingle(select_book_ISBN);
     if (select_book.ISBN[0] == '\0') {
       cout << "Invalid\n";
@@ -507,6 +527,10 @@ public:
   }
 
   void import(const string& quantity, const string& TotalCost) {
+    if (select_books.size() == 0) {
+      std::cout << "Invalid\n";
+      return;
+    }
       Book select_book = ISBN_Book_list.FindSingle(select_book_ISBN);
     if (select_book.ISBN[0] == '\0') {
       cout << "Invalid\n";
