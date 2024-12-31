@@ -76,9 +76,9 @@ struct Book {
   Book(string ISBN) {
     string blank = "";
     strcpy(this->ISBN, ISBN.c_str());
-    memset(this->name, 0, sizeof(this->name));
-    memset(this->author, 0, sizeof(this->author));
-    memset(this->keywords, 0, sizeof(this->keywords));
+    strcpy(this->name, blank.c_str());
+    strcpy(this->author, blank.c_str());
+    strcpy(this->keywords, blank.c_str());
     price = 0;
     quantity = 0;
   };
