@@ -19,10 +19,12 @@ int main() {
   LogSystem log_system;
   BookSystem book_system;
   AccountSystem account_system;
-  
-  while (true) {
-    string s;
-    getline(std::cin, s);
+  string s;
+
+  freopen("/home/entong/Bookstore/bookstore-testcases/advanced/testcase1/1.in", "r", stdin);
+  freopen("/home/entong/Bookstore/bookstore-testcases/advanced/testcase1/1(1).out", "w", stdout);
+
+  while (getline(std::cin, s)) {    
     auto input = GetInput(s);
     bool flag = judge(input);
     if (!flag && s != "") cout << "Invalid\n";
