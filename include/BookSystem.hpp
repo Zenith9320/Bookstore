@@ -430,14 +430,12 @@ public:
     select_book_ISBN = target;
   }  
   bool check_select_book() {
-    if (ISBN_Book_list.FindSingle(select_book_ISBN).ISBN[0] == '\0' || !ISBN_Book_list.if_find(select_book_ISBN)) return false;
+    Book select_book = ISBN_Book_list.FindSingle(select_book_ISBN);
+    if (select_book.ISBN[0] == '\0' || !ISBN_Book_list.if_find(select_book.ISBN)) return false;
     return true;
   }
   int get_quantity(const string& target) {
     return ISBN_Book_list.FindSingle(target).quantity;
-  }
-  void output_select_book() {
-    outputBook(ISBN_Book_list.FindSingle(select_book_ISBN));
   }
   void select_books_add() {
     String temp;
