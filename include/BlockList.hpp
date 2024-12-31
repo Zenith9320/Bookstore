@@ -10,7 +10,7 @@
 using std::string;
 
 constexpr int MAX_STRING = 65;
-constexpr int BLOCK_SIZE = 10000;
+constexpr int BLOCK_SIZE = 1000;
 
 template <class T>
 struct Key_Value {//存储键值对
