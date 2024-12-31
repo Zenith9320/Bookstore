@@ -16,6 +16,9 @@ void deleteGeneratedFiles(const vector<string>& files) {
 }
 
 int main() {
+  std::ios::sync_with_stdio(false); 
+  cin.tie(nullptr);          
+  cout.tie(nullptr); 
   LogSystem log_system;
   BookSystem book_system;
   AccountSystem account_system;
