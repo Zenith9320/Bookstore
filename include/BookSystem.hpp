@@ -167,6 +167,10 @@ public:
       i++;
     }
     if (showtype == "ISBN") {
+      if (!ISBN_Book_list.if_find(content)) {
+        cout << '\n';
+        return;
+      }
       auto ans = ISBN_Book_list.FindSingle(content);
       if (ans.ISBN[0] == '\0') {
         cout << '\n';
@@ -258,17 +262,13 @@ public:
     ISBN_Book_list.Insert(ISBN, book);
     std::cout << fixed << setprecision(2) << book.price * std::stod(quantity) << '\n';
   }  
-  void select(const string& ISBN) {
-    if (select_books.size() == 0) {
-      std::cout << "Invalid\n";
-      return;
+  void select(const string& ISBN1) {
+    if (!ISBN_Book_list.if_find(ISBN1)) {
+      Book new_book(ISBN1);
+      ISBN_Book_list.Insert(ISBN1, new_book);
     }
-    if (!ISBN_Book_list.if_find(ISBN)) {
-      Book new_book(ISBN);
-      ISBN_Book_list.Insert(ISBN, new_book);
-    }
-    select_book_ISBN = ISBN;
-    String temp(ISBN);
+    select_book_ISBN = ISBN1;
+    String temp(ISBN1);
     select_books[select_books.size() - 1] = temp;
   }
 
