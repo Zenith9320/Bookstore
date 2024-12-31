@@ -397,6 +397,7 @@ public:
             }
             index_pos = index.next_offset;
         }
+        return T();
     }
     int get_KeyValue_num() {
         int tmp;
