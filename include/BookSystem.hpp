@@ -492,6 +492,7 @@ public:
             temp += now_keywords[i];
           }
         }
+        if (temp.size() != 0) keywords_ISBN_list.Insert(temp, temp1);
       }
       if (modifytype == "price") {
         double price = std::stod(content);
