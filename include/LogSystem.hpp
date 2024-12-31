@@ -33,7 +33,7 @@ public:
       total_income += finance.income;
       total_outcome += finance.outcome;
     }
-    std::cout << "+ " << fixed << setprecision(2) << total_income << " - " << fixed << setprecision(2) << total_outcome << '\n';
+    std::cout << "+ " << fixed << setprecision(2) << total_income << " - " << fixed << setprecision(2) << total_outcome;
   }
 
   //输出指定笔数的记录
@@ -57,7 +57,7 @@ public:
       total_income += finance.income;
       total_outcome += finance.outcome;
     }
-    std::cout << "+ " << fixed << setprecision(2) << total_income << " - " << fixed << setprecision(2) << total_outcome << '\n';
+    std::cout << "+ " << fixed << setprecision(2) << total_income << " - " << fixed << setprecision(2) << total_outcome;
   }
 
   //记录一笔收入

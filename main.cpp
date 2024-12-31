@@ -22,9 +22,6 @@ int main() {
   string s;
   int cur_privilege = -1;
 
-  freopen("/home/entong/Bookstore/bookstore-testcases/basic/testcase8/1.in", "r", stdin);
-  freopen("/home/entong/Bookstore/bookstore-testcases/basic/testcase8/1(1).out", "w", stdout);
-
   while (getline(std::cin, s)) {    
     auto input = GetInput(s);
     bool flag = judge(input);
@@ -67,7 +64,8 @@ int main() {
         if (input.size() == 2 && account_system.get_account_num() == 0) {
           cout << "Invalid\n";
           continue;
-        } else if (input.size() == 2) {
+        }
+        if (input.size() == 2) {
           account_system.Login_nopswd(input[1]);
           book_system.select_books_add();
           cur_privilege = account_system.get_current_privilege();
