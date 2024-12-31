@@ -26,7 +26,11 @@ struct Account {
     return *this;
   }
   
-  Account() : UserID(""), password(""), privilege(0), UserName("") {};
+  Account() : privilege(0) {
+    memset(UserID, 0, sizeof(UserID));
+    memset(password, 0, sizeof(password));
+    memset(UserName, 0, sizeof(UserName));
+  };
 
   Account(string ID, string pswd, string name) 
   : privilege(1) {

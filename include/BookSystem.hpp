@@ -24,8 +24,7 @@ struct String {
     return *this;
   }
   String() {
-    string blank = "";
-    strcpy(str_ISBN, blank.c_str());
+    memset(str_ISBN, 0, sizeof(str_ISBN));
   };
   String(string ISBN) {
     strcpy(this->str_ISBN, ISBN.c_str());
