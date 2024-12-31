@@ -58,15 +58,7 @@ struct Book {
     return *this;
   }
 
-  Book() {
-    string blank = "";
-    strcpy(this->ISBN, blank.c_str());
-    strcpy(this->name, blank.c_str());
-    strcpy(this->author, blank.c_str());
-    strcpy(this->keywords, blank.c_str());
-    price = 0;
-    quantity = 0;
-  };
+  Book() = default;
 
   Book(string ISBN, string name, string author, string keywords, double price, int quantity)
   : price(price), quantity(quantity) {

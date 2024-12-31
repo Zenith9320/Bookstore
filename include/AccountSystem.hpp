@@ -27,9 +27,10 @@ struct Account {
   }
   
   Account() : privilege(0) {
-    memset(UserID, 0, sizeof(UserID));
-    memset(password, 0, sizeof(password));
-    memset(UserName, 0, sizeof(UserName));
+    string blank = "";
+    strcpy(UserID, blank.c_str());
+    strcpy(password, blank.c_str());
+    strcpy(UserName, blank.c_str());
   };
 
   Account(string ID, string pswd, string name) 
