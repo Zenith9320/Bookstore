@@ -242,10 +242,6 @@ public:
     }
   }
   void buy(const string& ISBN, const string& quantity) {
-    if (select_books.size() == 0) {
-      std::cout << "Invalid\n";
-      return;
-    }
     if (!ISBN_Book_list.if_find(ISBN)) {
       cout << "Invalid\n";
       return;

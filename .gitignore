@@ -21,3 +21,5 @@ BookSystem
 include/tempCodeRunnerFile.hpp
 gdb.txt
 Bookstore_select_books.dat
+deleteall
+deleteall.cpp

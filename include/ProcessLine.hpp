@@ -225,7 +225,7 @@ inline bool judge(const vector<string> &input) {
     }
     if (command == "delete") {
       if (length == 2) {
-        if (judgeISBN(input[1])) return true;
+        if (judgeaccount(input[1])) return true;
         return false;
       }
       else return false;
