@@ -23,3 +23,5 @@ gdb.txt
 Bookstore_select_books.dat
 deleteall
 deleteall.cpp
+analysis.txt
+gmon.out

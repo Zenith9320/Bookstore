@@ -64,11 +64,10 @@ struct Book {
   }
 
   Book() {
-    string blank = "";
-    strcpy(ISBN, blank.c_str());
-    strcpy(name, blank.c_str());
-    strcpy(author, blank.c_str());
-    strcpy(keywords, blank.c_str());
+    memset(ISBN, 0, sizeof(ISBN));
+    memset(name, 0, sizeof(name));
+    memset(author, 0, sizeof(author));
+    memset(keywords, 0, sizeof(keywords));
     price = 0;
     quantity = 0;
   };
@@ -182,7 +181,6 @@ public:
     if (showtype == "name") {
       auto ISBN_set = name_ISBN_list.FindKey(content);
       for (auto ISBN : ISBN_set) {
-        Book book;
         string temp = ISBN.str_ISBN;
         auto result = ISBN_Book_list.FindKey(temp);
         for (auto it = result.begin(); it != result.end(); it++) show_books.insert(*it);
@@ -191,7 +189,6 @@ public:
     if (showtype == "author") {
       auto ISBN_set = author_ISBN_list.FindKey(content);
       for (auto ISBN : ISBN_set) {
-        Book book;
         string temp = ISBN.str_ISBN;
         auto result = ISBN_Book_list.FindKey(temp);
         for (auto it = result.begin(); it != result.end(); it++) show_books.insert(*it);
@@ -234,8 +231,7 @@ public:
       for (int j = 0; j < block.KeyValue_num; ++j) {
         const Key_Value<Book>& kv = block.KeyValues[j];
         if constexpr (std::is_same<Book, Book>::value) {
-          Book book = kv.value; 
-          outputBook(book);
+          outputBook(kv.value);
         }
       }
       index_pos = index.next_offset;
@@ -268,129 +264,7 @@ public:
     select_books[select_books.size() - 1] = temp;
   }
 
-  //更改图书的单个信息
-  void modify_single(const string& order) {
-    string modifytype = "";
-    for (int i = 1; i < order.size(); i++) {
-      if (order[i] == '=') break;
-      modifytype += order[i];
-    }
-    string content = "";
-    int i = 1;
-    while (order[i] != '=' && i < order.size()) {
-      i++;
-    }
-    i++;
-    while (i < order.size()) {
-      content += order[i];
-      i++;
-    }
-    if (modifytype == "ISBN") {
-      Book select_book = ISBN_Book_list.FindSingle(select_book_ISBN);
-      Book new_book = select_book;
-      if (strcmp(new_book.ISBN, content.c_str()) == 0) {
-        cout << "Invalid\n";
-        return;
-      } 
-      if (ISBN_Book_list.if_find(content)) {
-        cout << "Invalid\n";
-        return;
-      }
-      string name1 = select_book.name;
-      string author1 = select_book.author;
-      string keywords1 = select_book.keywords;      
-      String temp1(select_book.ISBN);
-      if (select_book.name[0] != '\0') name_ISBN_list.DeleteKeyValue(name1, temp1);
-      if (select_book.author[0] != '\0') author_ISBN_list.DeleteKeyValue(author1, temp1);
-      if (select_book.keywords[0] != '\0') keywords_ISBN_list.DeleteKeyValue(keywords1, temp1);
-      if (std::to_string(select_book.price).size() != 0) price_ISBN_list.DeleteKeyValue(std::to_string(select_book.price), temp1);
-      string key = select_book.ISBN;
-      ISBN_Book_list.DeleteKeyValue(key, select_book);
-      strcpy(new_book.ISBN, content.c_str());
-      key = content;
-      ISBN_Book_list.Insert(key, new_book);
-      select_book = new_book;
-      string ISBN1 = new_book.ISBN;
-      name1 = new_book.name;
-      author1 = new_book.author;
-      keywords1 = new_book.keywords;
-      if (select_book.name[0] != '\0') name_ISBN_list.Insert(name1, ISBN1);
-      if (select_book.author[0] != '\0') author_ISBN_list.Insert(author1, ISBN1);
-      if (select_book.keywords[0] != '\0') keywords_ISBN_list.Insert(keywords1, ISBN1);
-      if (std::to_string(select_book.price).size() != 0) price_ISBN_list.Insert(std::to_string(new_book.price), ISBN1);
-      select_book_ISBN = content;
-    }
-    if (modifytype == "name") {
-      content = content.substr(1, content.size() - 2);
-      Book select_book = ISBN_Book_list.FindSingle(select_book_ISBN);
-      Book new_book = select_book;
-      strcpy(new_book.name, content.c_str());
-      String temp1(select_book.ISBN);
-      String temp2(new_book.ISBN);
-      name_ISBN_list.DeleteKeyValue(select_book.name, temp1);
-      name_ISBN_list.Insert(new_book.name, temp1);
-      ISBN_Book_list.DeleteKeyValue(select_book.ISBN, select_book);
-      ISBN_Book_list.Insert(select_book.ISBN, new_book);
-      select_book = new_book;
-    }
-    if (modifytype == "author") {
-      content = content.substr(1, content.size() - 2);
-      Book select_book = ISBN_Book_list.FindSingle(select_book_ISBN);
-      Book new_book = select_book;
-      strcpy(new_book.author, content.c_str());
-      String temp1(select_book.ISBN);
-      String temp2(new_book.ISBN);
-      author_ISBN_list.DeleteKeyValue(select_book.author, temp1);
-      author_ISBN_list.Insert(new_book.author, temp1);
-      ISBN_Book_list.DeleteKeyValue(select_book.ISBN, select_book);
-      ISBN_Book_list.Insert(select_book.ISBN, new_book);
-      select_book = new_book;
-    }
-    if (modifytype == "keyword") {
-      content = content.substr(1, content.size() - 2);
-      Book select_book = ISBN_Book_list.FindSingle(select_book_ISBN);
-      Book new_book = select_book;
-      strcpy(new_book.keywords, content.c_str());
-      String temp1(select_book.ISBN);
-      String temp2(new_book.ISBN);
-      string origin_keywords = select_book.keywords;
-      string now_keywords = new_book.keywords;
-      string temp = "";
-      for (int i = 0; i < origin_keywords.size(); i++) {
-        if (origin_keywords[i] == '|') {
-          keywords_ISBN_list.DeleteKeyValue(temp, temp1);
-          temp = "";
-        } else {
-          temp += origin_keywords[i];
-        }
-      }
-      if (temp.size() != 0) keywords_ISBN_list.DeleteKeyValue(temp, temp1);
-      temp = "";
-      for (int i = 0; i < now_keywords.size(); i++) {
-        if (now_keywords[i] == '|') {
-          keywords_ISBN_list.Insert(temp, temp1);
-          temp = "";
-        } else {
-          temp += now_keywords[i];
-        }
-      }
-      ISBN_Book_list.DeleteKeyValue(select_book.ISBN, select_book);
-      ISBN_Book_list.Insert(select_book.ISBN, new_book);
-      select_book = new_book;
-    }
-    if (modifytype == "price") {
-      double price = std::stod(content);
-      Book select_book = ISBN_Book_list.FindSingle(select_book_ISBN);
-      Book new_book = select_book;
-      new_book.price = price;
-      String temp1(select_book.ISBN);
-      price_ISBN_list.DeleteKeyValue(std::to_string(select_book.price), temp1);
-      price_ISBN_list.Insert(std::to_string(new_book.price), temp1);
-      ISBN_Book_list.DeleteKeyValue(select_book.ISBN, select_book);
-      ISBN_Book_list.Insert(select_book.ISBN, new_book);
-    }
-  }
-
+  //修改图书信息
   void modify(const vector<string>& orders) {
     if (select_books.size() == 0) {
       std::cout << "Invalid\n";
@@ -547,27 +421,23 @@ public:
     ISBN_Book_list.Insert(select_book.ISBN, select_book);
   }
   auto get_select_book() {
-    Book select_book = ISBN_Book_list.FindSingle(select_book_ISBN);
-    return select_book;
+    return ISBN_Book_list.FindSingle(select_book_ISBN);
   }
   auto get_book(const string& ISBN1) {
-    Book ans = ISBN_Book_list.FindSingle(ISBN1);
-    return ans;
+    return ISBN_Book_list.FindSingle(ISBN1);
   }
   void set_select_book(const string& target) {    
     select_book_ISBN = target;
   }  
   bool check_select_book() {
-    Book select_book = ISBN_Book_list.FindSingle(select_book_ISBN);
-    if (select_book.ISBN[0] == '\0' || !ISBN_Book_list.if_find(select_book.ISBN)) return false;
+    if (ISBN_Book_list.FindSingle(select_book_ISBN).ISBN[0] == '\0' || !ISBN_Book_list.if_find(select_book_ISBN)) return false;
     return true;
   }
   int get_quantity(const string& target) {
     return ISBN_Book_list.FindSingle(target).quantity;
   }
   void output_select_book() {
-    Book select_book = ISBN_Book_list.FindSingle(select_book_ISBN);
-    outputBook(select_book);
+    outputBook(ISBN_Book_list.FindSingle(select_book_ISBN));
   }
   void select_books_add() {
     String temp;
