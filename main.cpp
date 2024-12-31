@@ -20,6 +20,11 @@ int main() {
   BookSystem book_system;
   AccountSystem account_system;
   string s;
+  int cur_privilege = -1;
+
+  freopen("/home/entong/Bookstore/bookstore-testcases/basic/testcase8/1.in", "r", stdin);
+  freopen("/home/entong/Bookstore/bookstore-testcases/basic/testcase8/1(1).out", "w", stdout);
+
   while (getline(std::cin, s)) {    
     auto input = GetInput(s);
     bool flag = judge(input);
@@ -34,7 +39,7 @@ int main() {
       //财务记录查询
       if (input.size() == 2 || input.size() == 3) {
         if (input[0] == "show" && input[1] == "finance") {
-          if (account_system.get_current_privilege() != 7) {
+          if (cur_privilege != 7) {
             cout << "Invalid\n";
             continue;
           }
@@ -62,14 +67,15 @@ int main() {
         if (input.size() == 2 && account_system.get_account_num() == 0) {
           cout << "Invalid\n";
           continue;
-        }
-        if (input.size() == 2) {
+        } else if (input.size() == 2) {
           account_system.Login_nopswd(input[1]);
           book_system.select_books_add();
+          cur_privilege = account_system.get_current_privilege();
           continue;
         } else if (input.size() == 3) {
           account_system.Login(input[1], input[2]);
           book_system.select_books_add();
+          cur_privilege = account_system.get_current_privilege();
           continue;
         } else {
           cout << "Invalid\n";
@@ -83,6 +89,7 @@ int main() {
         book_system.clear_select_book();
         book_system.select_books_pop();
         book_system.set_select_book();
+        cur_privilege = account_system.get_current_privilege();
       }
 
       //注册
@@ -92,7 +99,7 @@ int main() {
 
       //修改密码
       if (input[0] == "passwd") {
-        if (input.size() == 3 && account_system.get_current_privilege() != 7) {
+        if (input.size() == 3 && cur_privilege != 7) {
           cout << "Invalid\n";
           continue;
         }
@@ -105,7 +112,7 @@ int main() {
 
       //添加用户
       if (input[0] == "useradd") {
-        if (std::stoi(input[3]) >= account_system.get_current_privilege()) {
+        if (std::stoi(input[3]) >= cur_privilege) {
           cout << "Invalid\n";
           continue;
         }
@@ -123,7 +130,7 @@ int main() {
 
       //选择图书
       if (input[0] == "select") {
-        if (account_system.get_current_privilege() < 3) {
+        if (cur_privilege < 3) {
           cout << "Invalid\n";
           continue;
         }
@@ -132,7 +139,7 @@ int main() {
 
       //检索图书
       if (input[0] == "show") {
-        if (account_system.get_current_privilege() < 1) {
+        if (cur_privilege < 1) {
           cout << "Invalid\n";
           continue;
         }
@@ -145,7 +152,7 @@ int main() {
 
       //修改图书信息
       if (input[0] == "modify") {
-        if (account_system.get_current_privilege() < 3) {
+        if (cur_privilege < 3) {
           cout << "Invalid\n";
           continue;
         }
@@ -163,7 +170,7 @@ int main() {
 
       //进货
       if (input[0] == "import") {
-        if (account_system.get_current_privilege() < 3) {
+        if (cur_privilege < 3) {
           cout << "Invalid\n";
           continue;
         }
