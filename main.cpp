@@ -25,9 +25,6 @@ int main() {
   string s;
   int cur_privilege = -1;
 
-  freopen("/home/entong/Bookstore/bookstore-testcases/advanced/testcase1/2.in", "r", stdin);
-  freopen("/home/entong/Bookstore/bookstore-testcases/advanced/testcase1/2(1).out", "w", stdout);
-
   while (getline(std::cin, s)) {    
     auto input = GetInput(s);
     bool flag = judge(input);
