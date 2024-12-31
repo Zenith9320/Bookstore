@@ -5,10 +5,6 @@
 #include "LogSystem.hpp"
 #include "Vector.hpp"
 #include <vector>
-#include <set>
-#include <iostream>
-#include <string>
-#include <cstring>
 
 using std::string;
 using std::vector;
@@ -63,10 +59,11 @@ struct Book {
   }
 
   Book() {
-    memset(ISBN, 0, sizeof(ISBN));
-    memset(name, 0, sizeof(name));
-    memset(author, 0, sizeof(author));
-    memset(keywords, 0, sizeof(keywords));
+    string blank = "";
+    strcpy(this->ISBN, blank.c_str());
+    strcpy(this->name, blank.c_str());
+    strcpy(this->author, blank.c_str());
+    strcpy(this->keywords, blank.c_str());
     price = 0;
     quantity = 0;
   };
@@ -400,7 +397,7 @@ public:
       std::cout << "Invalid\n";
       return;
     }
-      Book select_book = ISBN_Book_list.FindSingle(select_book_ISBN);
+    Book select_book = ISBN_Book_list.FindSingle(select_book_ISBN);
     if (select_book.ISBN[0] == '\0') {
       cout << "Invalid\n";
       return;
@@ -419,32 +416,32 @@ public:
     ISBN_Book_list.DeleteKeyValue(select_book.ISBN, select_book);
     ISBN_Book_list.Insert(select_book.ISBN, select_book);
   }
-  auto get_select_book() {
+  inline auto get_select_book() {
     return ISBN_Book_list.FindSingle(select_book_ISBN);
   }
-  auto get_book(const string& ISBN1) {
+  inline auto get_book(const string& ISBN1) {
     return ISBN_Book_list.FindSingle(ISBN1);
   }
-  void set_select_book(const string& target) {    
+  inline void set_select_book(const string& target) {    
     select_book_ISBN = target;
   }  
-  bool check_select_book() {
+  inline bool check_select_book() {
     Book select_book = ISBN_Book_list.FindSingle(select_book_ISBN);
     if (select_book.ISBN[0] == '\0' || !ISBN_Book_list.if_find(select_book.ISBN)) return false;
     return true;
   }
-  int get_quantity(const string& target) {
+  inline int get_quantity(const string& target) {
     return ISBN_Book_list.FindSingle(target).quantity;
   }
-  void select_books_add() {
+  inline void select_books_add() {
     String temp;
     select_books.push_back(temp);
   }
-  void select_books_pop() {
+  inline void select_books_pop() {
     if (select_books.size() == 0) return;
     select_books.pop_back();
   }
-  void set_select_book() {
+  inline void set_select_book() {
     string temp = select_books[select_books.size() - 1].str_ISBN;
     select_book_ISBN = temp;
   }
