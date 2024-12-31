@@ -58,14 +58,12 @@ struct Book {
     return *this;
   }
 
-  Book() {
+  Book() : price(0), quantity(0) {
     string blank = "";
     strcpy(this->ISBN, blank.c_str());
     strcpy(this->name, blank.c_str());
     strcpy(this->author, blank.c_str());
     strcpy(this->keywords, blank.c_str());
-    price = 0;
-    quantity = 0;
   };
 
   Book(string ISBN, string name, string author, string keywords, double price, int quantity)
@@ -78,9 +76,9 @@ struct Book {
   Book(string ISBN) {
     string blank = "";
     strcpy(this->ISBN, ISBN.c_str());
-    strcpy(this->name, blank.c_str());
-    strcpy(this->author, blank.c_str());
-    strcpy(this->keywords, blank.c_str());
+    memset(this->name, 0, sizeof(this->name));
+    memset(this->author, 0, sizeof(this->author));
+    memset(this->keywords, 0, sizeof(this->keywords));
     price = 0;
     quantity = 0;
   };

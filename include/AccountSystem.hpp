@@ -109,9 +109,7 @@ public:
       temp.pop();
     }
     auto temp1 = AccountList.FindKey(ID);
-    auto it = temp1.begin();
-    Account temp2 = *it;
-    AccountList.DeleteKeyValue(ID, temp2);
+    AccountList.DeleteKeyValue(ID, *temp1.begin());
   }
   void rootChangePassword(string ID, string pswd) {
     if (!AccountList.if_find(ID)) { cout << "Invalid\n"; return; }
