@@ -16,10 +16,14 @@ void deleteGeneratedFiles(const vector<string>& files) {
 }
 
 int main() {
+  std::ios::sync_with_stdio(false); 
+  cin.tie(nullptr);          
+  cout.tie(nullptr);
   LogSystem log_system;
   BookSystem book_system;
   AccountSystem account_system;
   string s;
+
   int cur_privilege = -1;
   while (getline(std::cin, s)) {    
     auto input = GetInput(s);

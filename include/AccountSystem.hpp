@@ -109,10 +109,19 @@ public:
     Account temp2 = *it;
     AccountList.DeleteKeyValue(ID, temp2);
   }
+  void rootChangePassword(string ID, string pswd) {
+    if (!AccountList.if_find(ID)) { cout << "Invalid\n"; return; }
+    Account target = AccountList.FindSingle(ID);
+    AccountList.DeleteKeyValue(ID, target);
+    strcpy(target.password, pswd.c_str());
+    AccountList.Insert(ID, target);
+    target = AccountList.FindSingle(ID);
+  }
   void ChangePassword(string ID, string Cur, string New) {
     if (!AccountList.if_find(ID)) { cout << "Invalid\n"; return; }
     Account target = AccountList.FindSingle(ID);
     if (target.password != Cur) { cout << "Invalid\n"; return; }
+    if (ID == "root" && Cur == AccountList.FindSingle(ID).password) rootChangePassword(ID, New);
     AccountList.DeleteKeyValue(ID, target);
     strcpy(target.password, New.c_str());
     AccountList.Insert(ID, target);
@@ -133,14 +142,6 @@ public:
     Account target = AccountList.FindSingle(ID);
     if (LogStack.top().privilege <= target.privilege) { cout << "Invalid\n"; return; }
     LogStack.push(target);
-  }
-  void rootChangePassword(string ID, string pswd) {
-    if (!AccountList.if_find(ID)) { cout << "Invalid\n"; return; }
-    Account target = AccountList.FindSingle(ID);
-    AccountList.DeleteKeyValue(ID, target);
-    strcpy(target.password, pswd.c_str());
-    AccountList.Insert(ID, target);
-    target = AccountList.FindSingle(ID);
   }
   int get_account_num() {
     return LogStack.size();
