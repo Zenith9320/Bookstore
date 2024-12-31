@@ -393,11 +393,10 @@ public:
                     l++;
                 }
                 result = block.KeyValues[l].value;
-
+                return result;
             }
             index_pos = index.next_offset;
         }
-        return result;
     }
     int get_KeyValue_num() {
         int tmp;
