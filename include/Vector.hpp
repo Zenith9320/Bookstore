@@ -15,10 +15,10 @@ private:
   }
 public:
   Vector(const std::string& filename) : file(filename) {
-    std::ofstream outfile1(file, std::ios::trunc);
     std::ifstream infile(file, std::ios::binary);
     if (!infile.is_open()) {
       std::ofstream outfile(file, std::ios::binary); 
+      std::ofstream outfile1(file, std::ios::trunc);
     }
   }
   ~Vector() = default;

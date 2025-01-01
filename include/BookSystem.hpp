@@ -3,7 +3,6 @@
 
 #include "BlockList.hpp"
 #include "LogSystem.hpp"
-#include "Vector.hpp"
 #include <vector>
 
 using std::string;

@@ -8,13 +8,6 @@
 using std::string;
 using std::cout;
 
-void deleteGeneratedFiles(const vector<string>& files) {
-  for (const auto& file : files) {
-    std::ofstream file1(file, std::ios::trunc);
-    file1.close();
-  }
-}
-
 int main() {
   LogSystem log_system;
   BookSystem book_system;
