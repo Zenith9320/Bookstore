@@ -13,6 +13,7 @@ int main() {
   BookSystem book_system;
   AccountSystem account_system;
   string s;
+
   int cur_privilege = -1;
   while (getline(std::cin, s)) { 
     auto input = GetInput(s);

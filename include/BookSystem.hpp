@@ -336,6 +336,9 @@ public:
         if (select_book.author[0] != '\0') author_ISBN_list.Insert(author1, ISBN1);
         if (select_book.keywords[0] != '\0') keywords_ISBN_list.Insert(keywords1, ISBN1);
         if (std::to_string(select_book.price).size() != 0) price_ISBN_list.Insert(std::to_string(new_book.price), ISBN1);
+        for (int i = 0; i < select_books.size(); i++) {
+          if (strcmp(select_books[i].str_ISBN, select_book_ISBN.c_str()) == 0) strcpy(select_books[i].str_ISBN, content.c_str());
+        }
         select_book_ISBN = content;
       }
       if (modifytype == "name") {
@@ -356,6 +359,28 @@ public:
       }
       if (modifytype == "keyword") {
         content = content.substr(1, content.size() - 2);
+        std::set<string> keywords;
+        string temps = "";
+        for (int i = 0; i < content.size(); i++) {
+          if (content[i] == '|') {
+            if (temps.size() != 0) {
+              if (keywords.find(temps) != keywords.end()) {
+                cout << "Invalid\n";
+                return;
+              }
+              keywords.insert(temps);
+            }
+            temps = "";
+          } else {
+            temps += content[i];
+          }
+        }
+        if (temps.size() != 0) {
+          if (keywords.find(temps) != keywords.end()) {
+            cout << "Invalid\n";
+            return;
+          }
+        }
         strcpy(new_book.keywords, content.c_str());
         String temp1(select_book.ISBN);
         String temp2(new_book.ISBN);
