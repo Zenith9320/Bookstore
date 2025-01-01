@@ -32,6 +32,7 @@ public:
   }
   void pop_back() {
     size_t size = get_size();
+    if (size == 0) return;
     std::ofstream outfile(file, std::ios::binary);
     for (size_t i = 0; i < size - 1; i++) {
       T value;

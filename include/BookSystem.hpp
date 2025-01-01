@@ -117,18 +117,15 @@ private:
   //当前选中的书
   string select_book_ISBN;
   //登录栈对应的选中的书构成的栈
-  Vector<String> select_books;
+  vector<String> select_books;
 public:
   BookSystem() : name_ISBN_list("Bookstore_name_ISBN_", "index_file.dat", "value_file.dat"),
                  author_ISBN_list("Bookstore_author_ISBN_", "index_file.dat", "value_file.dat"),
                  keywords_ISBN_list("Bookstore_keywords_ISBN_", "index_file.dat", "value_file.dat"),
                  price_ISBN_list("Bookstore_price_ISBN_", "index_file.dat", "value_file.dat"),
-                 ISBN_Book_list("Bookstore_ISBN_Book_", "index_file.dat", "value_file.dat"),
-                 select_books("Bookstore_select_books.dat")
+                 ISBN_Book_list("Bookstore_ISBN_Book_", "index_file.dat", "value_file.dat")
                  {
     select_book_ISBN = "";
-    String blank("");
-    select_books.push_back(blank);
   }
   ~BookSystem() {
     ofstream tempfile("Bookstore_select_books.dat", std::ios::trunc);
@@ -250,20 +247,26 @@ public:
     ISBN_Book_list.Insert(ISBN, book);
     std::cout << fixed << setprecision(2) << book.price * std::stod(quantity) << '\n';
   }  
+
+  //选择图书
   void select(const string& ISBN1) {
     if (!ISBN_Book_list.if_find(ISBN1)) {
       Book new_book(ISBN1);
       ISBN_Book_list.Insert(ISBN1, new_book);
     }
     select_book_ISBN = ISBN1;
-    String temp(ISBN1);
-    select_books[select_books.size() - 1] = temp;
+    select_books.pop_back();
+    select_books.push_back(String(ISBN1));
   }
 
   //修改图书信息
   void modify(const vector<string>& orders) {
     if (select_books.size() == 0) {
       std::cout << "Invalid\n";
+      return;
+    }
+    if (select_book_ISBN == "") {
+      cout << "Invalid\n";
       return;
     }
     Book select_book = ISBN_Book_list.FindSingle(select_book_ISBN);
@@ -434,7 +437,7 @@ public:
     return ISBN_Book_list.FindSingle(target).quantity;
   }
   inline void select_books_add() {
-    String temp;
+    String temp("init");
     select_books.push_back(temp);
     select_book_ISBN = temp.str_ISBN;
   }
@@ -444,14 +447,13 @@ public:
   }
   inline void set_select_book() {
     string temp = select_books[select_books.size() - 1].str_ISBN;
-    select_book_ISBN = temp;
+    if (temp != "init") select_book_ISBN = temp;
+    else select_book_ISBN = "";
   }
-  inline void renew_select_book() {
-    if (!(select_books.size() == 0)) {
-      select_books.pop_back();
-      select_book_ISBN = select_books[select_books.size() - 1].str_ISBN;
+  inline void output_select_books() {
+    for (int i = 0; i < select_books.size(); i++) {
+      cout << select_books[i].str_ISBN << '\n';
     }
-    return;
   }
 };
 #endif
