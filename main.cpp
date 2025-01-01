@@ -24,9 +24,6 @@ int main() {
   AccountSystem account_system;
   string s;
 
-  freopen("/home/entong/Bookstore/bookstore-testcases/complex/testcase3/1.in", "r", stdin);
-  freopen("/home/entong/Bookstore/bookstore-testcases/complex/testcase3/1.out", "w", stdout);
-
   int cur_privilege = -1;
   while (getline(std::cin, s)) { 
     auto input = GetInput(s);

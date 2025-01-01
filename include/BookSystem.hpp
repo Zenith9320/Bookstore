@@ -394,16 +394,16 @@ public:
 
   void import(const string& quantity, const string& TotalCost) {
     if (select_books.size() == 0) {
-      std::cout << "Invalid:no books selected\n";
+      std::cout << "Invalid\n";
       return;
     }
     Book select_book = ISBN_Book_list.FindSingle(select_book_ISBN);
     if (std::stoi(quantity) < 0) {
-      cout << "Invalid: quantity not enough\n";
+      cout << "Invalid\n";
       return;
     }
     if (std::stod(TotalCost) < 0) {
-      cout << "Invalid: cost <0\n";
+      cout << "Invalid\n";
       return;
     }
     int num = std::stoi(quantity);
