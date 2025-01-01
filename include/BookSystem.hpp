@@ -127,6 +127,8 @@ public:
                  select_books("Bookstore_select_books.dat")
                  {
     select_book_ISBN = "";
+    String blank("");
+    select_books.push_back(blank);
   }
   ~BookSystem() {
     ofstream tempfile("Bookstore_select_books.dat", std::ios::trunc);
@@ -392,20 +394,16 @@ public:
 
   void import(const string& quantity, const string& TotalCost) {
     if (select_books.size() == 0) {
-      std::cout << "Invalid\n";
+      std::cout << "Invalid:no books selected\n";
       return;
     }
     Book select_book = ISBN_Book_list.FindSingle(select_book_ISBN);
-    if (select_book.ISBN[0] == '\0') {
-      cout << "Invalid\n";
-      return;
-    }
     if (std::stoi(quantity) < 0) {
-      cout << "Invalid\n";
+      cout << "Invalid: quantity not enough\n";
       return;
     }
     if (std::stod(TotalCost) < 0) {
-      cout << "Invalid\n";
+      cout << "Invalid: cost <0\n";
       return;
     }
     int num = std::stoi(quantity);
@@ -434,6 +432,7 @@ public:
   inline void select_books_add() {
     String temp;
     select_books.push_back(temp);
+    select_book_ISBN = temp.str_ISBN;
   }
   inline void select_books_pop() {
     if (select_books.size() == 0) return;
@@ -442,6 +441,13 @@ public:
   inline void set_select_book() {
     string temp = select_books[select_books.size() - 1].str_ISBN;
     select_book_ISBN = temp;
+  }
+  inline void renew_select_book() {
+    if (!(select_books.size() == 0)) {
+      select_books.pop_back();
+      select_book_ISBN = select_books[select_books.size() - 1].str_ISBN;
+    }
+    return;
   }
 };
 #endif

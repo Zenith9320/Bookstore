@@ -23,6 +23,10 @@ int main() {
   BookSystem book_system;
   AccountSystem account_system;
   string s;
+
+  freopen("/home/entong/Bookstore/bookstore-testcases/complex/testcase3/1.in", "r", stdin);
+  freopen("/home/entong/Bookstore/bookstore-testcases/complex/testcase3/1.out", "w", stdout);
+
   int cur_privilege = -1;
   while (getline(std::cin, s)) { 
     auto input = GetInput(s);
@@ -68,13 +72,15 @@ int main() {
           continue;
         }
         if (input.size() == 2) {
-          account_system.Login_nopswd(input[1]);
-          book_system.select_books_add();
+          bool check = account_system.Login_nopswd(input[1]);
+          if (check) book_system.select_books_add();
           cur_privilege = account_system.get_current_privilege();
           continue;
         } else if (input.size() == 3) {
-          account_system.Login(input[1], input[2]);
-          book_system.select_books_add();
+          bool check = account_system.Login(input[1], input[2]);
+          if (check) {
+            book_system.select_books_add();
+          }
           cur_privilege = account_system.get_current_privilege();
           continue;
         } else {

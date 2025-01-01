@@ -139,20 +139,25 @@ public:
     string temp = "";
     LogStack.pop();
   }
-  void Login(string ID, string pswd) {
-    if (!AccountList.if_find(ID)) { cout << "Invalid\n"; return; }
+  bool Login(string ID, string pswd) {
+    if (!AccountList.if_find(ID)) { cout << "Invalid\n"; return false; }
     Account target = AccountList.FindSingle(ID);
-    if (pswd != target.password) { cout << "Invalid\n"; return; }
+    if (pswd != target.password) { cout << "Invalid\n"; return false; }
     LogStack.push(target);
+    return true;
   }
-  void Login_nopswd(string ID) {
-    if (!AccountList.if_find(ID)) { cout << "Invalid\n"; return; }
+  bool Login_nopswd(string ID) {
+    if (!AccountList.if_find(ID)) { cout << "Invalid\n"; return false; }
     Account target = AccountList.FindSingle(ID);
-    if (LogStack.top().privilege <= target.privilege) { cout << "Invalid\n"; return; }
+    if (LogStack.top().privilege <= target.privilege) { cout << "Invalid\n"; return false; }
     LogStack.push(target);
+    return true;
   }
   int get_account_num() {
     return LogStack.size();
+  }
+  bool check_pswd(const string& ID, const string& pswd) {
+    return AccountList.FindSingle(ID).password == pswd;
   }
 };
 
