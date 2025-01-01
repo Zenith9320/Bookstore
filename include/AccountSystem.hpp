@@ -112,19 +112,25 @@ public:
     AccountList.DeleteKeyValue(ID, *temp1.begin());
   }
   void rootChangePassword(string ID, string pswd) {
-    if (!AccountList.if_find(ID)) { cout << "Invalid\n"; return; }
-    Account target = AccountList.FindSingle(ID);
-    AccountList.DeleteKeyValue(ID, target);
-    strcpy(target.password, pswd.c_str());
-    AccountList.Insert(ID, target);
-    target = AccountList.FindSingle(ID);
+    if (!AccountList.if_find(ID)) {
+        cout << "Invalid\n";
+        return;
+    }
+    Account temp = AccountList.FindSingle(ID);
+    while (AccountList.if_find(ID)) AccountList.DeleteKeyValue(ID, AccountList.FindSingle(ID)); 
+    strcpy(temp.password, pswd.c_str());
+    AccountList.Insert(ID, temp);
+    Account temp2 = AccountList.FindSingle(ID);
   }
   void ChangePassword(string ID, string Cur, string New) {
     if (!AccountList.if_find(ID)) { cout << "Invalid\n"; return; }
     Account target = AccountList.FindSingle(ID);
-    if (target.password != Cur) { cout << "Invalid\n"; return; }
-    if (ID == "root" && Cur == AccountList.FindSingle(ID).password) rootChangePassword(ID, New);
-    AccountList.DeleteKeyValue(ID, target);
+    if (target.password != Cur) { cout << "Invalid\n" << target.password << '\n'; return; }
+    if (ID == "root" && strcmp(Cur.c_str(), AccountList.FindSingle(ID).password) == 0) {
+      rootChangePassword(ID, New);
+      return;
+    }
+    while (AccountList.if_find(ID)) AccountList.DeleteKeyValue(ID, AccountList.FindSingle(ID)); 
     strcpy(target.password, New.c_str());
     AccountList.Insert(ID, target);
   }

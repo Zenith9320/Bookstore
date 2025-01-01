@@ -23,9 +23,10 @@ int main() {
   BookSystem book_system;
   AccountSystem account_system;
   string s;
-
+  
   int cur_privilege = -1;
-  while (getline(std::cin, s)) {    
+  while (getline(std::cin, s)) {   
+    std::cout << s << std::endl; 
     auto input = GetInput(s);
     bool flag = judge(input);
     if (!flag && s != "") cout << "Invalid\n";
