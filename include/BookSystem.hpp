@@ -398,6 +398,10 @@ public:
       return;
     }
     Book select_book = ISBN_Book_list.FindSingle(select_book_ISBN);
+    if (select_book.ISBN[0] == '\0') {
+      cout << "Invalid\n";
+      return;
+    }
     if (std::stoi(quantity) < 0) {
       cout << "Invalid\n";
       return;
