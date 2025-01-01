@@ -125,7 +125,7 @@ public:
   void ChangePassword(string ID, string Cur, string New) {
     if (!AccountList.if_find(ID)) { cout << "Invalid\n"; return; }
     Account target = AccountList.FindSingle(ID);
-    if (target.password != Cur) { cout << "Invalid\n" << target.password << '\n'; return; }
+    if (target.password != Cur) { cout << "Invalid\n"; return; }
     if (ID == "root" && strcmp(Cur.c_str(), AccountList.FindSingle(ID).password) == 0) {
       rootChangePassword(ID, New);
       return;
