@@ -134,10 +134,10 @@ public:
   void clear_select_book() {
     select_book_ISBN = "";
   }
-  void show(const string& order) {
+  bool show(const string& order) {
     if (select_books.size() == 0) {
       std::cout << "Invalid\n";
-      return;
+      return false;
     }
     set<Book> show_books;
     string showtype = "";
@@ -160,15 +160,15 @@ public:
     if (showtype == "ISBN") {
       if (!ISBN_Book_list.if_find(content)) {
         cout << '\n';
-        return;
+        return false;
       }
       auto ans = ISBN_Book_list.FindSingle(content);
       if (ans.ISBN[0] == '\0') {
         cout << '\n';
-        return;
+        return false;
       }
       outputBook(ans);
-      return;
+      return true;
     }
     if (showtype == "name") {
       auto ISBN_set = name_ISBN_list.FindKey(content);
@@ -199,16 +199,17 @@ public:
     int num = show_books.size();
     if (num == 0) {
       cout << "\n";
-      return;
+      return true;
     }
     for (auto it = show_books.begin(); it != show_books.end(); it++) {
       outputBook(*it);
     }
+    return true;
   }
-  void showall() {
+  bool showall() {
     if (select_books.size() == 0) {
       std::cout << "Invalid\n";
-      return;
+      return false;
     }
     int index_pos = 0;
     int index_number = 0;
@@ -228,27 +229,29 @@ public:
       }
       index_pos = index.next_offset;
     }
+    return true;
   }
-  void buy(const string& ISBN, const string& quantity) {
+  bool buy(const string& ISBN, const string& quantity) {
     if (!ISBN_Book_list.if_find(ISBN)) {
       cout << "Invalid\n";
-      return;
+      return false;
     }
     Book book = ISBN_Book_list.FindSingle(ISBN);
     int num = std::stoi(quantity);
     if (num > book.quantity || num <= 0) {
       cout << "Invalid\n";
-      return;
+      return false;
     }
     book.quantity -= num;
     //重新插入更改后的图书
     ISBN_Book_list.DeleteKeyValue(ISBN, ISBN_Book_list.FindSingle(ISBN));
     ISBN_Book_list.Insert(ISBN, book);
     std::cout << fixed << setprecision(2) << book.price * std::stod(quantity) << '\n';
+    return true;
   }  
 
   //选择图书
-  void select(const string& ISBN1) {
+  bool select(const string& ISBN1) {
     if (!ISBN_Book_list.if_find(ISBN1)) {
       Book new_book(ISBN1);
       ISBN_Book_list.Insert(ISBN1, new_book);
@@ -256,22 +259,23 @@ public:
     select_book_ISBN = ISBN1;
     select_books.pop_back();
     select_books.push_back(String(ISBN1));
+    return true;
   }
 
   //修改图书信息
-  void modify(const vector<string>& orders) {
+  bool modify(const vector<string>& orders) {
     if (select_books.size() == 0) {
       std::cout << "Invalid\n";
-      return;
+      return false;
     }
     if (select_book_ISBN == "") {
       cout << "Invalid\n";
-      return;
+      return false;
     }
     Book select_book = ISBN_Book_list.FindSingle(select_book_ISBN);
     if (select_book.ISBN[0] == '\0') {
       cout << "Invalid\n";
-      return;
+      return false;
     }
     std::set<string> modifytypes;
     for (int i = 1; i < orders.size(); i++) {
@@ -283,7 +287,7 @@ public:
       }
       if (modifytypes.find(modifytype) != modifytypes.end()) {
         cout << "Invalid\n";
-        return;
+        return false;
       }
       modifytypes.insert(modifytype);
     }
@@ -308,11 +312,11 @@ public:
       if (modifytype == "ISBN") {
         if (strcmp(new_book.ISBN, content.c_str()) == 0) {
           cout << "Invalid\n";
-          return;
+          return false;
         } 
         if (ISBN_Book_list.if_find(content)) {
           cout << "Invalid\n";
-          return;
+          return false;
         }
         string name1 = select_book.name;
         string author1 = select_book.author;
@@ -366,7 +370,7 @@ public:
             if (temps.size() != 0) {
               if (keywords.find(temps) != keywords.end()) {
                 cout << "Invalid\n";
-                return;
+                return false;
               }
               keywords.insert(temps);
             }
@@ -378,7 +382,7 @@ public:
         if (temps.size() != 0) {
           if (keywords.find(temps) != keywords.end()) {
             cout << "Invalid\n";
-            return;
+            return false;
           }
         }
         strcpy(new_book.keywords, content.c_str());
@@ -417,31 +421,33 @@ public:
     }
     ISBN_Book_list.DeleteKeyValue(select_book.ISBN, select_book);
     ISBN_Book_list.Insert(new_book.ISBN, new_book);
+    return true;
   }
 
-  void import(const string& quantity, const string& TotalCost) {
+  bool import(const string& quantity, const string& TotalCost) {
     if (select_books.size() == 0) {
       std::cout << "Invalid\n";
-      return;
+      return false;
     }
     Book select_book = ISBN_Book_list.FindSingle(select_book_ISBN);
     if (select_book.ISBN[0] == '\0') {
       cout << "Invalid\n";
-      return;
+      return false;
     }
     if (std::stoi(quantity) < 0) {
       cout << "Invalid\n";
-      return;
+      return false;
     }
     if (std::stod(TotalCost) < 0) {
       cout << "Invalid\n";
-      return;
+      return false;
     }
     int num = std::stoi(quantity);
     double p = std::stod(TotalCost);
     select_book.quantity += num;
     ISBN_Book_list.DeleteKeyValue(select_book.ISBN, select_book);
     ISBN_Book_list.Insert(select_book.ISBN, select_book);
+    return true;
   }
   inline auto get_select_book() {
     return ISBN_Book_list.FindSingle(select_book_ISBN);

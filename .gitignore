@@ -25,3 +25,5 @@ deleteall
 deleteall.cpp
 analysis.txt
 gmon.out
+Bookstore_employee_Log.dat
+Bookstore_Log.dat

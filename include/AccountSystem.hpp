@@ -86,58 +86,63 @@ public:
     if (!AccountList.if_find(ID)) return -1;
     return AccountList.FindSingle(ID).privilege;
   }
-  void Register(string ID, string pswd, string name) {
+  bool Register(string ID, string pswd, string name) {
     Account New_member(ID, pswd, name);
-    auto current_account = LogStack.top();
-    if (AccountList.if_find(ID)) { cout << "Invalid\n"; return; }
+    if (AccountList.if_find(ID)) { cout << "Invalid\n"; return false; }
     AccountList.Insert(ID, New_member);
+    return true;
   }
-  void UserAdd(string ID, string pswd, int priv, string name) {
-    if (AccountList.if_find(ID)) { cout << "Invalid\n"; return; }
+  bool UserAdd(string ID, string pswd, int priv, string name) {
+    if (AccountList.if_find(ID)) { cout << "Invalid\n"; return false; }
     auto current_account = LogStack.top();
-    if (priv > current_account.privilege) { cout << "Invalid\n"; return; } 
+    if (priv > current_account.privilege) { cout << "Invalid\n"; return false; } 
     Account New_member(ID, pswd,  priv, name);
     AccountList.Insert(ID, New_member);
+    return true;
   }
-  void Delete(string ID) {
+  bool Delete(string ID) {
     auto current_account = LogStack.top();
-    if (current_account.privilege != 7) { cout << "Invalid\n"; return; }
-    if (!AccountList.if_find(ID)) { cout << "Invalid\n"; return; }
+    if (current_account.privilege != 7) { cout << "Invalid\n"; return false; }
+    if (!AccountList.if_find(ID)) { cout << "Invalid\n"; return false; }
     stack<Account> temp = LogStack;
     while (!temp.empty()) {
-      if (ID == temp.top().UserID) { cout << "Invalid\n"; return; }
+      if (ID == temp.top().UserID) { cout << "Invalid\n"; return false; }
       temp.pop();
     }
     auto temp1 = AccountList.FindKey(ID);
     AccountList.DeleteKeyValue(ID, *temp1.begin());
+    return true;
   }
-  void rootChangePassword(string ID, string pswd) {
+  bool rootChangePassword(string ID, string pswd) {
     if (!AccountList.if_find(ID)) {
         cout << "Invalid\n";
-        return;
+        return false;
     }
     Account temp = AccountList.FindSingle(ID);
     while (AccountList.if_find(ID)) AccountList.DeleteKeyValue(ID, AccountList.FindSingle(ID)); 
     strcpy(temp.password, pswd.c_str());
     AccountList.Insert(ID, temp);
     Account temp2 = AccountList.FindSingle(ID);
+    return true;
   }
-  void ChangePassword(string ID, string Cur, string New) {
-    if (!AccountList.if_find(ID)) { cout << "Invalid\n"; return; }
+  bool ChangePassword(string ID, string Cur, string New) {
+    if (!AccountList.if_find(ID)) { cout << "Invalid\n"; return false; }
     Account target = AccountList.FindSingle(ID);
-    if (target.password != Cur) { cout << "Invalid\n"; return; }
+    if (target.password != Cur) { cout << "Invalid\n"; return false; }
     if (ID == "root" && strcmp(Cur.c_str(), AccountList.FindSingle(ID).password) == 0) {
       rootChangePassword(ID, New);
-      return;
+      return false;
     }
     while (AccountList.if_find(ID)) AccountList.DeleteKeyValue(ID, AccountList.FindSingle(ID)); 
     strcpy(target.password, New.c_str());
     AccountList.Insert(ID, target);
+    return true;
   }
-  void Logout() {
-    if (LogStack.empty()) { cout << "Invalid\n"; return; }
+  bool Logout() {
+    if (LogStack.empty()) { cout << "Invalid\n"; return false; }
     string temp = "";
     LogStack.pop();
+    return true;
   }
   bool Login(string ID, string pswd) {
     if (!AccountList.if_find(ID)) { cout << "Invalid\n"; return false; }
@@ -158,6 +163,10 @@ public:
   }
   bool check_pswd(const string& ID, const string& pswd) {
     return AccountList.FindSingle(ID).password == pswd;
+  }
+  string get_worker_ID() {
+    if (LogStack.empty()) return "None";
+    return LogStack.top().UserID;
   }
 };
 
